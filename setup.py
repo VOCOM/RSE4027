@@ -7,6 +7,7 @@
 # Changelog:
 # - 16/10/23:
 #   Find function added.
+#   User Interface added.
 ##
 
 import os
