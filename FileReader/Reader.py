@@ -14,6 +14,7 @@ def loadData(dataPath, headerFormat = {}):
     compiledData.header = csvSet[0].header
     for csv in csvSet:
         for dataLine in csv.dataSet:
+            # TODO add DATA cleaning here
             compiledData.data.append(dataLine)
     return compiledData
 
