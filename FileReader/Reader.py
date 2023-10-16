@@ -3,8 +3,10 @@ from .DataTypes import CSV, DATA
 
 def loadData(dataPath, headerFormat = {}):
     csvSet = []
-    for filePath in os.listdir(dataPath):
-        csvSet.append(loadCSV(os.path.join(dataPath,filePath), True))
+    dataFolder = os.listdir(dataPath)
+    for filePath in dataFolder:
+        filePath = os.path.join(dataPath,filePath)
+        csvSet.append(loadCSV(filePath, True))
 
     print("Found", str(len(csvSet)), "Datasets")
     

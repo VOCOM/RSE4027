@@ -1,30 +1,64 @@
+## 
+# @author Muhammad Syamim Bin Shamsulbani
+# @brief Machine learning & Artificial Intelligence Program for RSE4207
+# @version 0.5
+# @date 16/10/23
+#
+# Changelog:
+# - 16/10/23:
+#   Find function added.
+##
+
 import os
 from FileReader import Reader
 from EDA import eda
 
+def Operations():
+    global func
+    operationList = [
+        "1) Clear Screen",
+        "2) Print data table",
+        "3) Find All based on header category",
+        "E) Exit Program"
+    ]
 
-def Options():
-    index = 0
-    
-    global func 
-    print(index,") Print data table")
-    index += 1
-    print(index,") Find All based on header category")
-    func = input("Functions:")
+    for operation in operationList:
+        print(operation)
+    func = input("Operation:")
 
-    if func == "E" or func == "e":
+    if func.capitalize() == "E":
         return False
     else:
         return True
 
-print("1) Milestone 1")
-print("2) Milestone 2")
-project = input("Select a project: ")
+def Menu():
+    global dataPath
+    projectList = [
+        "1) Milestone 1",
+        "2) Milestone 2",
+        "E) Exit Program"
+    ]
 
-if project == "1":
-    dataPath = "Milestone1"
-elif project == "2":
-    dataPath = "Milestone2"
+    loop = True
+
+    while loop:
+        loop = False
+        for project in projectList:
+            print(project)
+        project = input("Select a project: ")
+
+        if project == "1":
+            dataPath = "Milestone1"
+        elif project == "2":
+            dataPath = "Milestone2"
+        elif project.capitalize() == "E":
+            exit()
+        else:
+            loop = True
+            os.system("clear")
+
+dataPath = ""
+Menu()
 
 # Step 1: Exploratory Data Analysis
 headerFormat = {
@@ -33,17 +67,16 @@ headerFormat = {
     "Ticket Class" : int
 }
 
-# test = Reader.loadCSV(dataPath + "/train/MS_1_Scenario_train.csv", True)
-# test.PrintData()
-# exit()
-
 data = Reader.loadData(dataPath + "/train")
 func = 0
-while Options():
+while Operations():
     index = 0
-    if func == "0":
-        data.PrintData()
     if func == "1":
+        os.system("clear")
+    if func == "2":
+        os.system("clear")
+        data.PrintData()
+    if func == "3":
         print(data.header)
         func = input("Choose a category to search for: ")
         while index < len(data.header):
@@ -52,6 +85,5 @@ while Options():
                 break
             index += 1
         inputText = input("Survived?: ")
-        eda.FindAll(data, index, inputText)
-# data.PrintData()
-# eda.FindAll(data, 11, "Yes")
+        eda.Find(data, index, inputText)
+
