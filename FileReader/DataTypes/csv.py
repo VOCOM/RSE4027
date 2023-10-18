@@ -16,26 +16,28 @@ class CSV:
         index = 0
         for line in file:
             processedline = line.strip("\n")
-            if self.namedFlag:
-                processedline = self.ExtractName(processedline)
-            if len(processedline) != self.headerSize:
+            processedline = processedline.split(",")
+            if len(processedline) != self.headerSize + self.namedFlag:
                 print("There is missing information on line ", str(index))
-            else:
-                self.dataSet.append(processedline)
+            
+            if self.namedFlag:
+                processedline = self.CleanName(processedline)
+            
+            self.dataSet.append(processedline)
             # print(processedline)
             index += 1
 
-    def ExtractName(self, line):
-        nameStart = line.find("\"")
-        nameEnd = line.rfind("\"") + 1
-        startString = line[:nameStart].strip(",")
-        endString = line[nameEnd:].strip(",")
-        processedString = []
-        for value in startString.split(","):
-            processedString.append(value)
-        processedString.append(line[nameStart:nameEnd].strip("\"").replace("\"", ""))
-        for value in endString.split(","):
-            processedString.append(value)
+    def CleanName(self, line):
+        processedString = line
+        processedString[6] = processedString[6].strip().replace("\"", "")
+        processedString[7] = processedString[7].strip().replace("\"", "")
+        name = processedString[6] + ", " + processedString[7]
+        processedString[6] = name
+        index = 8
+        while index < len(processedString):
+            processedString[index - 1] = processedString[index]
+            index += 1
+        processedString.pop()
         return processedString
 
 
