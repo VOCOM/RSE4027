@@ -14,6 +14,9 @@ import os
 from FileReader import Reader
 from EDA import eda
 
+import matplotlib.pyplot as plt
+import numpy as np
+
 def Operations():
     global func
     operationList = [
@@ -86,6 +89,13 @@ while Operations():
         if func in data.dict.keys():
             distributionTable = eda.Find(data, func)
             eda.PrintDistribution(distributionTable)
+            
+            xAxis = np.array(list(distributionTable.keys()))
+            yAxis = np.array(list(distributionTable.values()))
+            print(xAxis)
+            print(yAxis)
+            plt.bar(xAxis, yAxis)
+            plt.show()
         else:
             os.system("clear")
             print("Category not found")
