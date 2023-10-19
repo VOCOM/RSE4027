@@ -20,7 +20,7 @@ def Operations():
         "1) Clear Screen",
         "2) Print data table",
         "3) Data Distributions",
-        "4) Find All based on header category",
+        "4) Filtered table",
         "E) Exit Program"
     ]
 
@@ -60,6 +60,7 @@ def Menu():
             os.system("clear")
 
 dataPath = ""
+os.system("clear")
 Menu()
 
 # Step 1: Exploratory Data Analysis
@@ -72,22 +73,20 @@ headerFormat = {
 data = Reader.loadData(dataPath + "/train")
 func = 0
 while Operations():
-    index = 0
+    os.system("clear")
     if func == "1":
-        os.system("clear")
+        pass
     if func == "2":
-        os.system("clear")
         data.PrintData()
     if func == "3":
         eda.Info(data)
     if func == "4":
         print(data.header)
         func = input("Choose a category to search for: ")
-        while index < len(data.header):
-            if func == data.header[index]:
-                category = data.header[index]
-                break
-            index += 1
-        inputText = input("Survived?: ")
-        eda.Find(data, index, inputText)
+        if func in data.dict.keys():
+            distributionTable = eda.Find(data, func)
+            eda.PrintDistribution(distributionTable)
+        else:
+            os.system("clear")
+            print("Category not found")
 
