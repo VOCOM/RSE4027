@@ -21,17 +21,15 @@ class CSV:
                 print("There is missing information on line ", str(index))
             
             if self.namedFlag:
-                processedline = self.CleanName(processedline)
+                processedline = self.ExtractName(processedline)
             
             self.dataSet.append(processedline)
             # print(processedline)
             index += 1
 
-    def CleanName(self, line):
+    def ExtractName(self, line):
         processedString = line
-        processedString[6] = processedString[6].strip().replace("\"", "")
-        processedString[7] = processedString[7].strip().replace("\"", "")
-        name = processedString[6] + ", " + processedString[7]
+        name = processedString[6] + "," + processedString[7]
         processedString[6] = name
         index = 8
         while index < len(processedString):

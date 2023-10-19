@@ -10,12 +10,11 @@ def loadData(dataPath, headerFormat = {}):
 
     print("Found", str(len(csvSet)), "Datasets")
     
-    compiledData = DATA()
-    compiledData.header = csvSet[0].header
+    compiledData = DATA(header=csvSet[0].header, namePos=6)
     for csv in csvSet:
         for dataLine in csv.dataSet:
-            # TODO add DATA cleaning here
-            compiledData.data.append(dataLine)
+            compiledData.AppendData(dataLine)
+    compiledData.CleanData()
     return compiledData
 
 def loadCSV(filePath, namedFlag = False):
