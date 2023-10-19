@@ -19,7 +19,7 @@ def Operations():
     operationList = [
         "1) Clear Screen",
         "2) Print data table",
-        "3) Print dictionary",
+        "3) Data Distributions",
         "4) Find All based on header category",
         "E) Exit Program"
     ]
@@ -79,7 +79,7 @@ while Operations():
         os.system("clear")
         data.PrintData()
     if func == "3":
-        data.PrintDict()
+        eda.Info(data)
     if func == "4":
         print(data.header)
         func = input("Choose a category to search for: ")

@@ -15,6 +15,7 @@ def loadData(dataPath, headerFormat = {}):
         for dataLine in csv.dataSet:
             compiledData.AppendData(dataLine)
     compiledData.CleanData()
+    compiledData.GenerateDictionary()
     return compiledData
 
 def loadCSV(filePath, namedFlag = False):
