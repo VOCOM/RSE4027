@@ -11,14 +11,9 @@
 ##
 
 import os
-from FileReader import Reader
-from EDA import eda
 
 import pandas
 from sklearn import linear_model
-
-import matplotlib.pyplot as plt
-import numpy as np
 
 def Operations():
     global func
@@ -27,7 +22,7 @@ def Operations():
         "2) Print data table",
         "3) Data Distributions",
         "4) Filtered table",
-        "5) Multiple Regression",
+        "5) Manual Logistic Regression",
         "E) Exit Program"
     ]
 
@@ -42,6 +37,7 @@ def Operations():
 
 def Menu():
     global dataPath
+    os.system("clear")
     projectList = [
         "1) Milestone 1",
         "2) Milestone 2",
@@ -67,17 +63,8 @@ def Menu():
             os.system("clear")
 
 dataPath = ""
-os.system("clear")
 Menu()
 
-# Step 1: Exploratory Data Analysis
-headerFormat = {
-    "Passenger ID" : int,
-    "Passenger Fare" : float,
-    "Ticket Class" : int
-}
-
-# data = Reader.loadData(dataPath + "/train")
 data = pandas.read_csv(dataPath + "/train/MS_1_Scenario_train.csv")
 
 data["Gender"] = data["Gender"].replace({"female" : 1}, regex=True)
@@ -107,19 +94,24 @@ while Operations():
             os.system("clear")
             print("Category not found\n")
     if func == "5":
-        # Multiple Regression
-        regr = linear_model.LinearRegression()
-        X = data[["Age", "NumParentChild", "NumSiblingSpouse"]]
-        y = data["Survived"]
-
+        # Logistic Regression
+        # regr = linear_model.LinearRegression()
+        regr = linear_model.LogisticRegression()
+        X = data[['Age', 'NumParentChild', 'NumSiblingSpouse']].values
+        y = data['Survived']
         regr.fit(X,y)
+
         # 801,$18,2,234360,0,S,"Milling, Mr. Jacob Christian",48,male,0,0,No
         # 814,$61.9292,1,PC 17485,A20,C,"Duff Gordon, Sir. Cosmo Edmund (""Mr Morgan"")",49,male,1,0,Yes
-        predictedSurvival = regr.predict([[49, 1, 0]])
-        print(predictedSurvival)
-        if predictedSurvival < 0.5:
-            print("Passenger will not survive")
-        else:
+        print("Enter Passenger details")
+        inAge = int(input("Age: "))
+        inParent = int(input("Number of Parents and Siblings: "))
+        inSibling = int(input("Number of Siblings and Spouses: "))
+        predictedSurvival = regr.predict([[inAge, inParent, inSibling]])
+        if predictedSurvival:
             print("Passenger will survive")
+        else:
+            print("Passenger will not survive")
+        print()
         pass
 
