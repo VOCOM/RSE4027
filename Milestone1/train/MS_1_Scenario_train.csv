@@ -30,7 +30,7 @@
 29,$5,3,LINE,0,S,"Johnson, Mr. William Cahoone Jr",19,male,0,0,No
 30,$12.225,3,2623,0,C,"Badt, Mr. Mohamed",40,male,0,0,No
 31,$19,2,29011,0,S,"Moraweck, Dr. Ernest",54,male,0,0,No
-32,$28.45,3,W./C. 6607,0,S,"Johnston, Miss. Catherine Helen ""Carrie""",0,female,1,2,No
+32,€28.45,3,W./C. 6607,0,S,"Johnston, Miss. Catherine Helen ""Carrie""",0,female,1,2,No
 33,$12.05,3,SOTON/O.Q. 3101312,0,S,"Ali, Mr. William",25,male,0,0,No
 34,$12.75,3,370372,0,Q,"McMahon, Mr. Martin",0,male,0,0,No
 35,$30.4667,3,4133,0,S,"Lefebre, Miss. Jeannie",0,female,3,1,No
@@ -43,7 +43,7 @@
 42,$18,2,248733,F33,S,"Brown, Miss. Amelia ""Mildred""",24,female,0,0,Yes
 43,$32.7208,2,SC/PARIS 2167,0,C,"del Carlo, Mr. Sebastiano",29,male,1,0,No
 44,$12.75,3,367231,0,Q,"Carr, Miss. Helen ""Ellen""",16,female,0,0,Yes
-45,$15.5,2,34218,E101,S,"Troutt, Miss. Edwina Celia ""Winnie""",27,female,0,0,Yes
+45,€15.5,2,34218,E101,S,"Troutt, Miss. Edwina Celia ""Winnie""",27,female,0,0,Yes
 46,$12.7333,3,A/5. 13032,0,Q,"Charters, Mr. David",21,male,0,0,No
 47,$13.05,3,A/5 2817,0,S,"Peduzzi, Mr. Joseph",0,male,0,0,No
 48,$25.2125,3,370129,0,S,"Rosblom, Mr. Viktor Richard",18,male,1,1,No

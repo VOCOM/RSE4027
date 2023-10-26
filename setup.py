@@ -15,6 +15,8 @@ import os
 import pandas
 from sklearn import linear_model
 
+clearCMD = "cls"
+
 def Operations():
     global func
     operationList = [
@@ -37,7 +39,7 @@ def Operations():
 
 def Menu():
     global dataPath
-    os.system("clear")
+    os.system(clearCMD)
     projectList = [
         "1) Milestone 1",
         "2) Milestone 2",
@@ -60,24 +62,45 @@ def Menu():
             exit()
         else:
             loop = True
-            os.system("clear")
+        os.system(clearCMD)
 
 dataPath = ""
 Menu()
 
 data = pandas.read_csv(dataPath + "/train/MS_1_Scenario_train.csv")
 
+# Clean Gender
 data["Gender"] = data["Gender"].replace({"female" : 1}, regex=True)
 data["Gender"] = data["Gender"].replace({"male" : 0}, regex=True)
+# Clean Survived
 data["Survived"] = data["Survived"].replace({"Yes" : 1}, regex=True)
 data["Survived"] = data["Survived"].replace({"No" : 0}, regex=True)
+# CLean Parent & Child
 data["NumParentChild"].convert_dtypes(convert_integer=True)
+# Clean Sibling & Spouse
 data["NumSiblingSpouse"].convert_dtypes(convert_integer=True)
-data["Age"].convert_dtypes(convert_integer=True)
+# Clean Age
+data["Age"] = data["Age"].astype(int)
+# Clean Fare
+index = 0
+for dataEntry in data["Passenger Fare"]:
+        if "$" not in dataEntry:
+            print("Foreign currency detected at index: ", index, "Passenger ID: ", data["Passenger ID"][index])
+            changeCurr = input("Would you like to change it?: ")
+            if changeCurr.capitalize()[0] == "Y":
+                print("Current value:", dataEntry)
+                dataEntry = '$' + float(input("New Value (in USD): "))
+        data.at[index, "Passenger Fare"] = round(float(dataEntry[1:]), 2)
+
+        index += 1
+# Clean Embarkation Country
+data["Embarkation Country"] = data["Embarkation Country"].replace({"C" : 1}, regex=True)
+data["Embarkation Country"] = data["Embarkation Country"].replace({"S" : 2}, regex=True)
+data["Embarkation Country"] = data["Embarkation Country"].replace({"Q" : 3}, regex=True)
 
 func = 0
 while Operations():
-    os.system("clear")
+    os.system(clearCMD)
     if func == "1":
         pass
     if func == "2":
@@ -91,28 +114,41 @@ while Operations():
         if func in header:
             print(data[func].to_string())
         else:
-            os.system("clear")
+            os.system(clearCMD)
             print("Category not found\n")
     if func == "5":
         # Logistic Regression
         # regr = linear_model.LinearRegression()
-        regr = linear_model.LogisticRegression()
-        X = data[['Age', 'Gender', 'NumParentChild', 'NumSiblingSpouse']].values
+        regr = linear_model.LogisticRegression(max_iter=1000)
+        X = data[['Passenger Fare','Ticket Class', 'Embarkation Country', 'Age', 'Gender', 'NumParentChild', 'NumSiblingSpouse']].values
         y = data['Survived']
         regr.fit(X,y)
 
-        # 801,$18,2,234360,0,S,"Milling, Mr. Jacob Christian",48,male,0,0,No
-        # 814,$61.9292,1,PC 17485,A20,C,"Duff Gordon, Sir. Cosmo Edmund (""Mr Morgan"")",49,male,1,0,Yes
-        print("Enter Passenger details")
-        inAge = int(input("Age: "))
-        inGender = input("Gender [M/F]: ")
-        if inGender == 'F':
+        # 801,$18,2,234360,0,S,"Milling, Mr. Jacob Christian",48,male,0,0,No [Predicted No]
+        # 814,$61.9292,1,PC 17485,A20,C,"Duff Gordon, Sir. Cosmo Edmund (""Mr Morgan"")",49,male,1,0,Yes [Predicted No]
+        # 876,$44,2,230136,F4,S,"Becker, Miss. Marion Louise",4,female,2,1,Yes [Predicted Yes]
+        print("Enter Passenger details\n")
+        inFare = round(float(input("Ticket Price (USD):")), 2)
+        inClass = int(input("Ticket Class (1,2,3):"))
+        inEmbark = input("Embarkation Country (C,S,Q):")
+        if inEmbark.capitalize()[0] == 'C':
+            inEmbark = 1
+        elif inEmbark.capitalize()[0] == 'S':
+            inEmbark = 2
+        else:
+            inEmbark = 3
+        inAge = int(input("Age:"))
+        inGender = input("Gender [M/F]:")
+        if inGender.capitalize()[0] == 'F':
             inGender = 1
         else:
             inGender = 0
-        inParent = int(input("Number of Parents and Siblings: "))
-        inSibling = int(input("Number of Siblings and Spouses: "))
-        predictedSurvival = regr.predict([[inAge, inGender, inParent, inSibling]])
+        inParent = int(input("Number of Parents and Siblings:"))
+        inSibling = int(input("Number of Siblings and Spouses:"))
+        print("\nWeights:\n")
+        print("Passenger Fare:", inFare, "Ticket Class:", inClass, "Embarkation Country:", inEmbark,
+              "Age:", inAge, "Gender:", inGender, "Number of Parents & Siblings:", inParent, "Number of Siblings and Spouses:", inSibling)
+        predictedSurvival = regr.predict([[inFare, inClass, inEmbark, inAge, inGender, inParent, inSibling]])
         if predictedSurvival:
             print("Passenger will survive")
         else:
