@@ -97,7 +97,7 @@ while Operations():
         # Logistic Regression
         # regr = linear_model.LinearRegression()
         regr = linear_model.LogisticRegression()
-        X = data[['Age', 'NumParentChild', 'NumSiblingSpouse']].values
+        X = data[['Age', 'Gender', 'NumParentChild', 'NumSiblingSpouse']].values
         y = data['Survived']
         regr.fit(X,y)
 
@@ -105,9 +105,14 @@ while Operations():
         # 814,$61.9292,1,PC 17485,A20,C,"Duff Gordon, Sir. Cosmo Edmund (""Mr Morgan"")",49,male,1,0,Yes
         print("Enter Passenger details")
         inAge = int(input("Age: "))
+        inGender = input("Gender [M/F]: ")
+        if inGender == 'F':
+            inGender = 1
+        else:
+            inGender = 0
         inParent = int(input("Number of Parents and Siblings: "))
         inSibling = int(input("Number of Siblings and Spouses: "))
-        predictedSurvival = regr.predict([[inAge, inParent, inSibling]])
+        predictedSurvival = regr.predict([[inAge, inGender, inParent, inSibling]])
         if predictedSurvival:
             print("Passenger will survive")
         else:
