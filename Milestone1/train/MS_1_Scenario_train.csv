@@ -1,6 +1,6 @@
 ﻿Passenger ID,Passenger Fare,Ticket Class,Ticket Number,Cabin,Embarkation Country,Name,Age,Gender,NumSiblingSpouse,NumParentChild,Survived
 1,$13.05,3,A./5. 2152,0,S,"Cann, Mr. Ernest Charles",21,male,0,0,No
-2,$27.3583,3,2668,F E69,C,"Peter, Miss. Anna",0,female,1,1,Yes
+2,₱27.3583,3,2668,F E69,C,"Peter, Miss. Anna",0,female,1,1,Yes
 3,$62.9792,1,111361,B18,C,"Hippach, Miss. Jean Gertrude",16,female,0,1,Yes
 4,$25.575,3,C.A. 2315,0,S,"Dean, Mr. Bertram Frank",26,male,1,2,No
 5,$24.2583,3,2666,0,C,"Baclini, Miss. Eugenie",0.75,female,2,1,Yes
