@@ -1,0 +1,6 @@
+Passenger ID,Passenger Fare,Ticket Class,Ticket Number,Cabin,Embarkation Country,Name,Age,Gender,NumSiblingSpouse,NumParentChild,Survived
+2,$27.3583,3,2668,F E69,C,"Peter, Miss. Anna",0.0,female,1,1,Yes
+215,$18,2,28551,D,S,"Ball, Mrs. (Ada E Hall)",36.0,female,0,0,Yes
+243,$17.875,2,SC/Paris 2163,D,C,"Levy, Mr. Rene Jacques",36.0,male,0,0,No
+315,$12.65,3,348124,F G73,S,"Soholt, Mr. Peter Andreas Lauritz Andersen",19.0,male,0,0,No
+431,$18.7917,2,SC/AH Basle 541,D,C,"Jerwan, Mrs. Amin S (Marie Marthe Thuillard)",23.0,female,0,0,Yes

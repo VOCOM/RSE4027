@@ -1,0 +1,41 @@
+Passenger ID,Passenger Fare,Ticket Class,Ticket Number,Cabin,Embarkation Country,Name,Age,Gender,NumSiblingSpouse,NumParentChild,Survived
+3,$62.9792,1,111361,13,C,"Hippach, Miss. Jean Gertrude",16.0,female,0,1,Yes
+28,$44.6,1,11755,3,C,"Duff Gordon, Lady. (Lucille Christiana Sutherland) (""Mrs Morgan"")",48.0,female,1,0,Yes
+42,$18,2,248733,125,S,"Brown, Miss. Amelia ""Mildred""",24.0,female,0,0,Yes
+61,$31,2,230080,124,S,"Navratil, Master. Michel M",3.0,male,1,1,Yes
+70,$43.5,1,111320,119,S,"Gee, Mr. Arthur H",47.0,male,0,0,No
+96,$58.1,1,113806,123,S,"Chambers, Mr. Norman Campbell",27.0,male,1,0,Yes
+112,$31,2,230080,124,S,"Navratil, Master. Edmond Roger",2.0,male,1,1,Yes
+113,$216.3375,1,24160,18,S,"Robert, Mrs. Edward Scott (Elisabeth Walton McMillan)",43.0,female,0,1,Yes
+126,$38.5,1,111240,14,S,"Van der hoef, Mr. Wyckoff",61.0,male,0,0,No
+130,$85,1,113572,17,0,"Icard, Miss. Amelie",38.0,female,0,0,Yes
+149,$15.5,2,C.A. 34260,125,S,"Lemore, Mrs. (Amelia Milley)",34.0,female,0,0,Yes
+170,$12.75,3,383121,126,Q,"Tobin, Mr. Roger",0.0,male,0,0,No
+179,$60.4417,1,11765,118,C,"Harder, Mr. George Achilles",25.0,male,1,0,Yes
+184,$5,1,112058,12,S,"Fry, Mr. Richard",0.0,male,0,0,No
+191,$34.7,1,11771,21,C,"Kent, Mr. Edward Austin",58.0,male,0,0,No
+230,$44,2,230136,127,S,"Becker, Master. Richard F",1.0,male,2,1,Yes
+240,$31,2,230080,124,S,"Navratil, Mr. Michel (""Louis M Hoffman"")",36.5,male,0,2,No
+289,$84.65,1,110413,120,S,"Taussig, Mr. Emil",52.0,male,1,1,No
+302,$31.55,1,113050,22,S,"Butt, Major. Archibald Willingham",45.0,male,0,0,No
+349,$15.5,2,S.O./P.P. 3,122,S,"Mack, Mrs. (Mary)",57.0,female,0,0,No
+366,$62.9792,1,111361,13,C,"Hippach, Mrs. Louis Albert (Ida Sophia Fischer)",44.0,female,0,1,Yes
+369,$36,1,112277,6,C,"Blank, Mr. Henry",40.0,male,0,0,Yes
+383,$21.7,3,PP 9549,128,S,"Sandstrom, Mrs. Hjalmar (Agnes Charlotta Bengtsson)",24.0,female,0,2,Yes
+398,$84.65,1,110413,121,S,"Taussig, Miss. Ruth",18.0,female,0,2,Yes
+404,$58.1,1,113806,123,S,"Chambers, Mrs. Norman Campbell (Bertha Griggs)",33.0,female,1,0,Yes
+405,$86.8583,1,33638,8,S,"Dodge, Master. Washington",4.0,male,0,2,Yes
+420,$74.3,1,PC 17477,20,C,"Sagesser, Mlle. Emma",24.0,female,0,0,Yes
+445,$15.4625,3,347054,128,S,"Strom, Mrs. Wilhelm (Elna Matilda Persson)",29.0,female,1,1,No
+465,$5,1,112050,9,S,"Andrews, Mr. Thomas Jr",39.0,male,0,0,No
+521,$39.6542,1,PC 17754,10,C,"Goldschmidt, Mr. George B",71.0,male,0,0,No
+529,$74.3,1,PC 17477,20,C,"Aubart, Mme. Leontine Pauline",24.0,female,0,0,Yes
+579,$66.9792,1,113509,19,C,"Ostby, Mr. Engelhart Cornelius",65.0,male,0,1,No
+618,$15.4625,3,347054,128,S,"Strom, Miss. Telma Matilda",2.0,female,0,1,No
+620,$84.65,1,110413,120,S,"Taussig, Mrs. Emil (Tillie Mandelbaum)",39.0,female,1,1,Yes
+655,$21.7,3,PP 9549,128,S,"Sandstrom, Miss. Marguerite Rut",4.0,female,1,1,Yes
+704,$35.6958,1,17764,11,C,"Smith, Mr. James Clinch",56.0,male,0,0,No
+720,$55.4958,1,PC 17590,5,S,"Roebling, Mr. Washington Augustus II",31.0,male,0,0,No
+740,$15.5,2,C.A. 29395,125,S,"Nye, Mrs. (Elizabeth Ramell)",29.0,female,0,0,Yes
+757,$35,1,27042,4,S,"Barkworth, Mr. Algernon Henry Wilson",80.0,male,0,0,Yes
+770,$55,1,113767,7,S,"Rood, Mr. Hugh Roscoe",0.0,male,0,0,No
