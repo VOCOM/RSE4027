@@ -9,7 +9,7 @@ def preprocess_cabin_0(df):
     new_df = df[df['Cabin'] == '0']
     new_file = "data/cabin/filtered_cabin_0.csv"
     new_df.to_csv(new_file, index=False)
-
+# Defines a function that filters out all rows that the alphabet is not followed by a numerical value and saves the outlier data to a new CSV file
 def preprocess_cabin_exclude(df):
     # Filter rows in the "Cabin" column that have alphabets followed by a numerical value
     filtered_df = df[df['Cabin'].str.contains(r'[A-Z][A-Z\W\s]|[^0-9]$')]
@@ -17,6 +17,7 @@ def preprocess_cabin_exclude(df):
     filtered_file = "data/cabin/cabin_excluded.csv"    
     filtered_df.to_csv(filtered_file, index=False)
 
+# Defines a function that filters out all rows that the alphabet is not followed by a numerical value and saves to a new CSV file
 def preprocess_cabin_cleaned(df):
     # Filter rows in the "Cabin" column based on your criteria
     filtered_df = df[~df['Cabin'].str.contains(r'[A-Z][A-Z\W\s]|[^0-9]$')]
