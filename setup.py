@@ -14,6 +14,9 @@ import os
 
 import pandas
 from sklearn import linear_model
+import matplotlib.pyplot as plt
+
+from EDA import eda
 
 clearCMD = "cls"
 
@@ -69,34 +72,7 @@ Menu()
 
 data = pandas.read_csv(dataPath + "/train/MS_1_Scenario_train.csv")
 
-# Clean Gender
-data["Gender"] = data["Gender"].replace({"female" : 1}, regex=True)
-data["Gender"] = data["Gender"].replace({"male" : 0}, regex=True)
-# Clean Survived
-data["Survived"] = data["Survived"].replace({"Yes" : 1}, regex=True)
-data["Survived"] = data["Survived"].replace({"No" : 0}, regex=True)
-# CLean Parent & Child
-data["NumParentChild"].convert_dtypes(convert_integer=True)
-# Clean Sibling & Spouse
-data["NumSiblingSpouse"].convert_dtypes(convert_integer=True)
-# Clean Age
-data["Age"] = data["Age"].astype(int)
-# Clean Fare
-index = 0
-for dataEntry in data["Passenger Fare"]:
-        if "$" not in dataEntry:
-            print("Foreign currency detected at index: ", index, "Passenger ID: ", data["Passenger ID"][index])
-            changeCurr = input("Would you like to change it?: ")
-            if changeCurr.capitalize()[0] == "Y":
-                print("Current value:", dataEntry)
-                dataEntry = '$' + float(input("New Value (in USD): "))
-        data.at[index, "Passenger Fare"] = round(float(dataEntry[1:]), 2)
-
-        index += 1
-# Clean Embarkation Country
-data["Embarkation Country"] = data["Embarkation Country"].replace({"C" : 1}, regex=True)
-data["Embarkation Country"] = data["Embarkation Country"].replace({"S" : 2}, regex=True)
-data["Embarkation Country"] = data["Embarkation Country"].replace({"Q" : 3}, regex=True)
+data = eda.Clean(data)
 
 func = 0
 while Operations():
@@ -106,7 +82,8 @@ while Operations():
     if func == "2":
         print(data.to_string(), "\n")
     if func == "3":
-        data["Survived"].plot(kind="hist")
+        data["Survived"].groupby(level=0).hist(bins=2, grid=False)
+        plt.show()
     if func == "4":
         header = list(data.keys())
         print(header)
@@ -120,7 +97,16 @@ while Operations():
         # Logistic Regression
         # regr = linear_model.LinearRegression()
         regr = linear_model.LogisticRegression(max_iter=1000)
-        X = data[['Passenger Fare','Ticket Class', 'Embarkation Country', 'Age', 'Gender', 'NumParentChild', 'NumSiblingSpouse']].values
+        inputParameters = [
+            'Passenger Fare',
+            'Ticket Class',
+            'Embarkation Country',
+            'Age',
+            'Gender',
+            'NumParentChild',
+            'NumSiblingSpouse'
+        ]
+        X = data[inputParameters].values
         y = data['Survived']
         regr.fit(X,y)
 
@@ -131,12 +117,10 @@ while Operations():
         inFare = round(float(input("Ticket Price (USD):")), 2)
         inClass = int(input("Ticket Class (1,2,3):"))
         inEmbark = input("Embarkation Country (C,S,Q):")
-        if inEmbark.capitalize()[0] == 'C':
-            inEmbark = 1
-        elif inEmbark.capitalize()[0] == 'S':
-            inEmbark = 2
+        if 'C' in inEmbark.capitalize()[0] or 'S' in inEmbark.capitalize()[0]:
+            inEmbark = ord(inEmbark.capitalize()[0])
         else:
-            inEmbark = 3
+            inEmbark = ord('Q')
         inAge = int(input("Age:"))
         inGender = input("Gender [M/F]:")
         if inGender.capitalize()[0] == 'F':
@@ -146,7 +130,7 @@ while Operations():
         inParent = int(input("Number of Parents and Siblings:"))
         inSibling = int(input("Number of Siblings and Spouses:"))
         print("\nWeights:\n")
-        print("Passenger Fare:", inFare, "Ticket Class:", inClass, "Embarkation Country:", inEmbark,
+        print("Passenger Fare:", inFare, "Ticket Class:", inClass, "Embarkation Country:", chr(inEmbark),
               "Age:", inAge, "Gender:", inGender, "Number of Parents & Siblings:", inParent, "Number of Siblings and Spouses:", inSibling)
         predictedSurvival = regr.predict([[inFare, inClass, inEmbark, inAge, inGender, inParent, inSibling]])
         if predictedSurvival:
