@@ -134,54 +134,69 @@ data["Age"].convert_dtypes(convert_integer=True)
 # Pros: Uses loc member to access specific elements within column, if condition can be used on the element meeting the condition
 # Cons: Seems to take longer for every iteration implemented
 
-unknownVal = -1
+ignoreMissingDollarState = 0
+
+# print(data["Age"].isnull().sum())
+# print(len(data.columns))
+
+def str2NaN(value):
+    if value == "0":
+        value = np.nan
+    return value
+
+data["Cabin"] = data["Cabin"].apply(str2NaN)
+data["Embarkation Country"] = data["Embarkation Country"].apply(str2NaN)
 
 for x in data.index:
     # Clean Passenger Fare
-    data.loc[x, "Passenger Fare"] = re.sub("[^0-9.$]","",data.loc[x, "Passenger Fare"])
-    if '$' not in str(data.loc[x, "Passenger Fare"]):
-        while True:
-            response = input("Missing $ sign for Passenger ID "+str(x+1)+", keep the value? Y/N: ")
+    try:
+        float(data.loc[x, "Passenger Fare"].replace("$",""))
+    except ValueError:
+        print("Invalid input for Passenger ID "+str(x+1)+", removing value")
+        data.loc[x, "Passenger Fare"] = np.nan
+
+    if data.loc[x, "Passenger Fare"][0] != '$' and ignoreMissingDollarState == 0:
+        while not pandas.isna(data.loc[x, "Passenger Fare"]):
+            response = input("Missing $ sign for Passenger ID "+str(x+1)+", keep value(s) for all future occurrence? Y/N: ")
             if 'N' in response.upper():
-                try:
-                    data.loc[x, "Passenger Fare"] = float(input("Input Passenger Fare for Passenger ID "+str(x+1)+" (in $): "))
-                except ValueError:
-                    print("Invalid input for Passenger Fare, setting value to unknownVal")
-                    data.loc[x, "Passenger Fare"] = unknownVal
+                print("Removing value for Passenger ID "+str(x+1))
+                data.loc[x, "Passenger Fare"] = np.nan
                 break
             if 'Y' in response.upper():
+                ignoreMissingDollarState = 1
                 break
-    elif '$' in str(data.loc[x, "Passenger Fare"]):
+    elif data.loc[x, "Passenger Fare"][0] == '$':
         data.loc[x, "Passenger Fare"] = data.loc[x, "Passenger Fare"].replace("$","")
-    data.loc[x, "Passenger Fare"] = math.floor(float(data.loc[x, "Passenger Fare"]) * 100)/100
-    data.loc[x, "Passenger Fare"] = "{:.2f}".format(data.loc[x, "Passenger Fare"]) # Process takes awhile
+    if not pandas.isna(data.loc[x, "Passenger Fare"]):
+        data.loc[x, "Passenger Fare"] = math.floor(float(data.loc[x, "Passenger Fare"]) * 100)/100
+        data.loc[x, "Passenger Fare"] = "{:.2f}".format(data.loc[x, "Passenger Fare"]) # Process takes awhile
 
     # Clean Ticket Class
     try:
         int(data.loc[x, "Ticket Class"])
     except ValueError:
-        data.loc[x, "Ticket Class"] = unknownVal
-    if int(data.loc[x, "Ticket Class"]) < 1 or int(data.loc[x, "Ticket Class"]) > 3:
-        data.loc[x, "Ticket Class"] = unknownVal
+        data.loc[x, "Ticket Class"] = np.nan
+    if not pandas.isna(data.loc[x, "Ticket Class"]):
+        if int(data.loc[x, "Ticket Class"]) < 1 or int(data.loc[x, "Ticket Class"]) > 3:
+            data.loc[x, "Ticket Class"] = np.nan
 
     # Clean Age
     try:
         data.loc[x, "Age"] = math.floor(float(data.loc[x, "Age"]))
     except ValueError:
-        data.loc[x, "Age"] = unknownVal
-    data.loc[x, "Age"] = "{:.0f}".format(data.loc[x, "Age"])
-    # data.loc[x, "Age"] = re.sub("[^0-9.]","",str(data.loc[x, "Age"]))
-    # data.loc[x, "Age"] = int(math.floor(float(data.loc[x, "Age"])))
+        data.loc[x, "Age"] = np.nan
+    if not pandas.isna(data.loc[x, "Age"]):
+        data.loc[x, "Age"] = "{:.0f}".format(data.loc[x, "Age"])
 
     # No clean Ticket Number
 
     # No clean Cabin
 
     # Clean Embarkation Country
-    if data.loc[x, "Embarkation Country"].__len__() > 1:
-        data.loc[x, "Embarkation Country"] = input("Invalid Embarkation Country for Passenger ID "+str(x+1)+", key in correct value (single alphabetical character): ")
-    # if data.loc[x, "Embarkation Country"].str.
-
+    if not pandas.isna(data.loc[x, "Embarkation Country"]):
+        data.loc[x, "Embarkation Country"] = data.loc[x, "Embarkation Country"].upper()
+        if len(data.loc[x, "Embarkation Country"]) > 1 or not data.loc[x, "Embarkation Country"].isalpha():
+            data.loc[x, "Embarkation Country"] = np.nan
 
 # Without using apply() end
 
