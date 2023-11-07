@@ -1,5 +1,7 @@
 from FileReader.DataTypes import DATA
 
+import pandas
+import numpy as np
 import math
 import re
 
@@ -35,49 +37,7 @@ def Clean(data):
     data["NumParentChild"] = data["NumParentChild"].astype(int)
     data["NumSiblingSpouse"] = data["NumSiblingSpouse"].astype(int)
     data["Age"] = data["Age"].astype(float)
-
-    # Using apply() start
-    # Pros: Apply custom functions to every elements in the selected column (eg, Passenger Fare, Ticket Class, etc.)
-    # Cons: Method of tracking passenger ID
-    #       Custom functions does not accept >1 parameters
-
-    # passengerIndex = 0 # Primitive method of tracking Passenger ID, to be changed
-    # def roundFare(fare):
-    #     global passengerIndex 
-    #     passengerIndex = passengerIndex + 1
-    #     fare = re.sub("[^0-9.$€£¥₣₹₽₾₺₼₸₴₷฿원₫₮₯₱₳₵₲₪₰]","",fare)
-    #     for i in "€£¥₣₹₽₾₺₼₸₴₷฿원₫₮₯₱₳₵₲₪₰":
-    #         if i in fare:
-    #             fare = input("Other currency symbol detected, key in replacement value (in $) for Passenger ID " + str(passengerIndex) + ": ")
-    #     if fare[0] == '$':
-    #         fare = fare.replace('$','')
-    #     # if fare[0] != '$':
-    #     #     response = input("$ header missing for Passenger ID " + str(passengerIndex) + ", key in replacement value? Y/N: ")
-    #     #     if response.upper == 'N':
-    #     #         fare = input("Please key in replacement value for Passenger ID " + str(passengerIndex) + " (in $): ")
-    #     #     if response.upper == 'Y':
-    #     #         fare = fare.replace('$','')
-    #     #     else:
-    #     #         print("Invalid input, keeping values for Passenger ID " + str(passengerIndex))
-    #     try:
-    #         fare = float(fare)
-    #     except ValueError:
-    #         fare = -1.00
-    #         fare = input("Invalid values detected, key in replacement value (in $) for Passenger ID " + str(passengerIndex) + ": ")
-    #     return float(math.floor(fare * 100)/100)
-
-    # def roundAge(age):
-    #     return int(age)
-
-    # data["Passenger Fare"] = data["Passenger Fare"].apply(roundFare)
-    # # data["Passenger ID"] = data.apply(rowIndex, axis = 1)
-    # data["Age"] = data["Age"].apply(roundAge)
-
-    # Using apply() end
-
-    # Without using apply() start
-    # Pros: Uses loc member to access specific elements within column, if condition can be used on the element meeting the condition
-    # Cons: Seems to take longer for every iteration implemented
+    data.insert(len(data.columns), "Abnormal", False)
 
     unknownVal = -1
 
@@ -112,11 +72,13 @@ def Clean(data):
         # Clean Age
         try:
             data.loc[x, "Age"] = math.floor(float(data.loc[x, "Age"]))
+            if data.loc[x, "Age"] < 1:
+                data.loc[x, "Age"] = unknownVal
         except ValueError:
             data.loc[x, "Age"] = unknownVal
         data.loc[x, "Age"] = int("{:.0f}".format(data.loc[x, "Age"]))
-        # data.loc[x, "Age"] = re.sub("[^0-9.]","",str(data.loc[x, "Age"]))
-        # data.loc[x, "Age"] = int(math.floor(float(data.loc[x, "Age"])))
+        if data.loc[x, "Age"] == unknownVal:
+            data.loc[x, "Abnormal"] = True
 
         # No clean Ticket Number
 
@@ -131,3 +93,14 @@ def Clean(data):
     data['Age'] = data['Age'].astype(int)
     # Without using apply() end
     return data
+
+def Extract(data):
+    normalData = pandas.DataFrame(columns=data.columns)
+    i = 0
+    while i < len(data):
+        if data.loc[i, 'Abnormal'] == False:
+            normalData.loc[len(normalData.index)] = data.loc[i]
+        i += 1
+    normalData.drop('Abnormal', axis='columns', inplace=True)
+    return normalData
+
