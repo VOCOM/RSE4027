@@ -28,7 +28,7 @@ def Operations():
         "3) Print test table",
         "4) Data Distributions",
         "5) Filtered table",
-        "6) Manual Logistic Regression",
+        "6) Logistic Regression",
         "E) Exit Program"
     ]
 
@@ -36,7 +36,7 @@ def Operations():
         print(operation)
     func = input("Operation:")
 
-    if func.capitalize() == "E":
+    if func.strip().capitalize() == "E":
         return False
     else:
         return True
@@ -78,7 +78,8 @@ def Plots():
         '5) Age distribution',
         '6) Gender distribution',
         '7) Vertical Dependents distribution',
-        '8) Horizontal Dependents distribution'
+        '8) Horizontal Dependents distribution',
+        'E) Return to menu'
     ]
     for plotOption in plotList:
         print(plotOption)
@@ -107,14 +108,10 @@ def Plots():
         ax.bar(label,embarkation)
         plt.xlabel('Embarkation Country')
     elif plotType == "5":
-        # TODO
         age = data['Age'].value_counts()
-        label = list(data['Age'].keys())
-        print(label)
-        input()
-        # data['Age'].plot(kind="hist", edgecolor='white', bins=10)
+        label = list(age.keys())
         ax.bar(label,age)
-        plt.xlabel('Age')
+        plt.xlabel('Passenger Age')
     elif plotType == "6":
         label = ['Male', 'Female']
         gender = data['Gender'].value_counts()
@@ -133,10 +130,12 @@ def Plots():
         data['NumSiblingSpouse'].plot(kind="hist", edgecolor='white', bins=8)
         plt.xlabel('Number of Siblings & Spouses')
     else:
-        return
+        os.system(clearCMD)
+        return False
     plt.ylabel('Number of Passengers')
     plt.show()
     os.system(clearCMD)
+    return True
 
 dataPath = ""
 Menu()
@@ -145,6 +144,7 @@ data = pandas.read_csv(dataPath + "/train/MS_1_Scenario_train.csv")
 test = pandas.read_csv(dataPath + "/test/MS_1_Scenario_test.csv")
 
 data = eda.Clean(data)
+
 test = eda.Clean(test)
 
 func = 0
@@ -157,7 +157,8 @@ while Operations():
     if func == "3":
         print(test.to_string(), "\n")
     if func == "4":
-        Plots()
+        while Plots():
+            pass
     if func == "5":
         header = list(data.keys())
         print(header)
@@ -181,42 +182,39 @@ while Operations():
         ]
         X = data[inputParameters].values
         y = data['Survived']
-        regr.fit(X,y)
+        regr = regr.fit(X,y)
 
-        
-        # print("Enter Passenger details\n")
-        # inFare = round(float(input("Ticket Price (USD):")), 2)
-        # inClass = int(input("Ticket Class (1,2,3):"))
-        # inEmbark = input("Embarkation Country (C,S,Q):")
-        # if 'C' in inEmbark.capitalize()[0] or 'S' in inEmbark.capitalize()[0]:
-        #     inEmbark = ord(inEmbark.capitalize()[0])
-        # else:
-        #     inEmbark = ord('Q')
-        # inAge = int(input("Age:"))
-        # inGender = input("Gender [M/F]:")
-        # if inGender.capitalize()[0] == 'F':
-        #     inGender = 1
-        # else:
-        #     inGender = 0
-        # inParent = int(input("Number of Parents and Siblings:"))
-        # inSibling = int(input("Number of Siblings and Spouses:"))
-        # print("\nWeights:\n")
-        # print("Passenger Fare:", inFare, "Ticket Class:", inClass, "Embarkation Country:", chr(inEmbark),
-        #       "Age:", inAge, "Gender:", inGender, "Number of Parents & Siblings:", inParent, "Number of Siblings and Spouses:", inSibling)
-        inFare = test['Passenger Fare']
-        inClass = test['Ticket Class']
-        inEmbark = test['Embarkation Country']
-        inAge = test['Age']
-        inGender = test['Gender']
-        inParent = test['NumParentChild']
-        inSibling = test['NumSiblingSpouse']
-        print("Passenger Fare:", inFare, "Ticket Class:", inClass, "Embarkation Country:", chr(inEmbark),
-              "Age:", inAge, "Gender:", inGender, "Number of Parents & Siblings:", inParent, "Number of Siblings and Spouses:", inSibling)
-        predictedSurvival = regr.predict([[inFare, inClass, inEmbark, inAge, inGender, inParent, inSibling]])
-        if predictedSurvival:
-            print("Passenger will survive")
-        else:
-            print("Passenger will not survive")
-        print()
-        pass
+        confusionMatrix = pandas.DataFrame({
+            'Positive' : [0, 0],
+            'Negative' : [0, 0]
+        }, index = ['True', 'False'])
 
+        i = 0
+        while i < len(test):
+            inFare = test['Passenger Fare'][i]
+            inClass = test['Ticket Class'][i]
+            inEmbark = test['Embarkation Country'][i]
+            inAge = test['Age'][i]
+            inGender = test['Gender'][i]
+            inParent = test['NumParentChild'][i]
+            inSibling = test['NumSiblingSpouse'][i]
+            # print("Passenger Fare:", inFare, "Ticket Class:", inClass, "Embarkation Country:", chr(inEmbark),
+            #     "Age:", inAge, "Gender:", inGender, "Number of Parents & Siblings:", inParent, "Number of Siblings and Spouses:", inSibling)
+            predictedSurvival = regr.predict([[inFare, inClass, inEmbark, inAge, inGender, inParent, inSibling]])
+            
+            if predictedSurvival:
+                if test['Survived'][i]: #TP
+                    confusionMatrix.at['True','Positive'] += 1
+                else: #FP
+                    confusionMatrix.at['False','Positive'] += 1
+            else:
+                if test['Survived'][i]: #FN
+                    confusionMatrix.at['False','Negative'] += 1
+                else: #TN
+                    confusionMatrix.at['True','Negative'] += 1
+            i += 1
+        print("\n", confusionMatrix, "\n")
+        precision = confusionMatrix.at['True','Positive'] / (confusionMatrix.at['True','Positive'] + confusionMatrix.at['True','Negative'])
+        recall = confusionMatrix.at['True','Positive'] / (confusionMatrix.at['True','Positive'] + confusionMatrix.at['False','Negative'])
+        print("Precision:", precision)
+        print("Recall:", recall, "\n")

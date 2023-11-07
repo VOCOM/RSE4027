@@ -128,5 +128,6 @@ def Clean(data):
         data.loc[x, "Embarkation Country"] = ord(data.loc[x, "Embarkation Country"])
 
     data['Passenger Fare'] = data['Passenger Fare'].astype(float)
+    data['Age'] = data['Age'].astype(int)
     # Without using apply() end
     return data
