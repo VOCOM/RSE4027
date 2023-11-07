@@ -8,6 +8,9 @@
 # - 16/10/23:
 #   Find function added.
 #   User Interface added.
+# - 07/11/23:
+#   Clean data added.
+#   One-hot encoding added.
 ##
 
 import os
@@ -90,6 +93,9 @@ data["Survived"] = data["Survived"].replace({"No" : 0}, regex=True)
 data["NumParentChild"].convert_dtypes(convert_integer=True)
 data["NumSiblingSpouse"].convert_dtypes(convert_integer=True)
 data["Age"].convert_dtypes(convert_integer=True)
+data.insert(len(data.columns), "C", 0)
+data.insert(len(data.columns), "S", 0)
+data.insert(len(data.columns), "Q", 0)
 
 ignoreMissingDollarState = -1 # -1 is unknown, 0 is don't ignore, 1 is ignore
 
@@ -156,7 +162,14 @@ for x in data.index:
         data.loc[x, "Embarkation Country"] = data.loc[x, "Embarkation Country"].upper()
         if len(data.loc[x, "Embarkation Country"]) > 1 or not data.loc[x, "Embarkation Country"].isalpha():
             data.loc[x, "Embarkation Country"] = np.nan
+    if data.loc[x, "Embarkation Country"] == "C":
+        data.loc[x, "C"] = 1
+    if data.loc[x, "Embarkation Country"] == "S":
+        data.loc[x, "S"] = 1
+    if data.loc[x, "Embarkation Country"] == "Q":
+        data.loc[x, "Q"] = 1
 
+data.drop("Embarkation Country", axis="columns", inplace=True)
 # Without using apply() end
 
 func = 0
