@@ -13,6 +13,7 @@
 import os
 
 import pandas
+import numpy as np
 from sklearn import linear_model
 from sklearn.metrics import precision_score, recall_score, f1_score
 import matplotlib.pyplot as plt
@@ -107,8 +108,9 @@ def Plots(data):
         plt.xlabel('Ticket Class')
     elif plotType == "4":
         embarkation = data["Embarkation Country"].value_counts()
-        for val in data["Embarkation Country"].unique():
-            label.append(chr(val))
+        label = list(data["Embarkation Country"].unique())
+        if np.nan in label:
+            label.remove(np.nan)
         ax.bar(label,embarkation)
         plt.xlabel('Embarkation Country')
     elif plotType == "5":
