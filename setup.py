@@ -51,7 +51,6 @@ def Menu():
         "2) Milestone 2",
         "E) Exit Program"
     ]
-
     loop = True
 
     while loop:
@@ -70,8 +69,9 @@ def Menu():
             loop = True
         os.system(clearCMD)
 
-def Plots():
+def Plots(data):
     maxVal = 0
+    label = []
     plotList = [
         '1) Survivor distribution',
         '2) Fare distribution',
@@ -83,6 +83,7 @@ def Plots():
         '8) Horizontal Dependents distribution',
         'E) Return to menu'
     ]
+
     for plotOption in plotList:
         print(plotOption)
     plotType = input("Plot Type:")
@@ -100,13 +101,15 @@ def Plots():
         data['Passenger Fare'].plot(kind="hist", edgecolor='white', bins=maxVal)
         plt.xlabel('Fare Amount')
     elif plotType == "3":
-        label = ['1', '2', '3']
+        label = data["Ticket Class"].unique()
+        label.sort()
         ticketClass = data["Ticket Class"].value_counts()
         ax.bar(label, ticketClass)
         plt.xlabel('Ticket Class')
     elif plotType == "4":
         embarkation = data["Embarkation Country"].value_counts()
-        label = ['S','C','Q','0']
+        for val in data["Embarkation Country"].unique():
+            label.append(chr(val))
         ax.bar(label,embarkation)
         plt.xlabel('Embarkation Country')
     elif plotType == "5":
@@ -136,6 +139,7 @@ def Plots():
         return False
     plt.ylabel('Number of Passengers')
     plt.show()
+    plt.close()
     os.system(clearCMD)
     return True
 
@@ -192,14 +196,14 @@ def FilteredTable():
 dataPath = ""
 Menu()
 
-data = pandas.read_csv(dataPath + "/train/MS_1_Scenario_train.csv")
+rawData = pandas.read_csv(dataPath + "/train/MS_1_Scenario_train.csv")
 test = pandas.read_csv(dataPath + "/test/MS_1_Scenario_test.csv")
 
-data = eda.Clean(data)
+rawData = eda.Clean(rawData)
 test = eda.Clean(test)
-test.drop('Abnormal', axis='columns', inplace=True)
 
-extractedData = eda.Extract(data)
+extractedData = eda.Extract(rawData)
+test = eda.Extract(test)
 
 func = 0
 while Operations():
@@ -207,13 +211,25 @@ while Operations():
     if func == "1":
         pass
     if func == "2":
-        print(data.to_string(), "\n")
+        print(rawData.to_string(), "\n")
     if func == "3":
         print(extractedData.to_string(), "\n")
     if func == "4":
         print(test.to_string(), "\n")
     if func == "5":
-        while Plots():
+        os.system(clearCMD)
+        print("1) Original data")
+        print("2) Extracted data")
+        print("3) Test data")
+        func = input("Data to be analysed:")
+        if func == "1":
+            data = rawData
+        elif func == "2":
+            data = extractedData
+        else:
+            data = test
+        print()
+        while Plots(data):
             pass
     if func == "6":
         FilteredTable()
