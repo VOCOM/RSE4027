@@ -91,53 +91,7 @@ data["NumParentChild"].convert_dtypes(convert_integer=True)
 data["NumSiblingSpouse"].convert_dtypes(convert_integer=True)
 data["Age"].convert_dtypes(convert_integer=True)
 
-# Using apply() start
-# Pros: Apply custom functions to every elements in the selected column (eg, Passenger Fare, Ticket Class, etc.)
-# Cons: Method of tracking passenger ID
-#       Custom functions does not accept >1 parameters
-
-# passengerIndex = 0 # Primitive method of tracking Passenger ID, to be changed
-# def roundFare(fare):
-#     global passengerIndex 
-#     passengerIndex = passengerIndex + 1
-#     fare = re.sub("[^0-9.$€£¥₣₹₽₾₺₼₸₴₷฿원₫₮₯₱₳₵₲₪₰]","",fare)
-#     for i in "€£¥₣₹₽₾₺₼₸₴₷฿원₫₮₯₱₳₵₲₪₰":
-#         if i in fare:
-#             fare = input("Other currency symbol detected, key in replacement value (in $) for Passenger ID " + str(passengerIndex) + ": ")
-#     if fare[0] == '$':
-#         fare = fare.replace('$','')
-#     # if fare[0] != '$':
-#     #     response = input("$ header missing for Passenger ID " + str(passengerIndex) + ", key in replacement value? Y/N: ")
-#     #     if response.upper == 'N':
-#     #         fare = input("Please key in replacement value for Passenger ID " + str(passengerIndex) + " (in $): ")
-#     #     if response.upper == 'Y':
-#     #         fare = fare.replace('$','')
-#     #     else:
-#     #         print("Invalid input, keeping values for Passenger ID " + str(passengerIndex))
-#     try:
-#         fare = float(fare)
-#     except ValueError:
-#         fare = -1.00
-#         fare = input("Invalid values detected, key in replacement value (in $) for Passenger ID " + str(passengerIndex) + ": ")
-#     return float(math.floor(fare * 100)/100)
-
-# def roundAge(age):
-#     return int(age)
-
-# data["Passenger Fare"] = data["Passenger Fare"].apply(roundFare)
-# # data["Passenger ID"] = data.apply(rowIndex, axis = 1)
-# data["Age"] = data["Age"].apply(roundAge)
-
-# Using apply() end
-
-# Without using apply() start
-# Pros: Uses loc member to access specific elements within column, if condition can be used on the element meeting the condition
-# Cons: Seems to take longer for every iteration implemented
-
-ignoreMissingDollarState = 0
-
-# print(data["Age"].isnull().sum())
-# print(len(data.columns))
+ignoreMissingDollarState = -1 # -1 is unknown, 0 is don't ignore, 1 is ignore
 
 def str2NaN(value):
     if value == "0":
@@ -155,16 +109,21 @@ for x in data.index:
         print("Invalid input for Passenger ID "+str(x+1)+", removing value")
         data.loc[x, "Passenger Fare"] = np.nan
 
-    if data.loc[x, "Passenger Fare"][0] != '$' and ignoreMissingDollarState == 0:
-        while not pandas.isna(data.loc[x, "Passenger Fare"]):
-            response = input("Missing $ sign for Passenger ID "+str(x+1)+", keep value(s) for all future occurrence? Y/N: ")
-            if 'N' in response.upper():
-                print("Removing value for Passenger ID "+str(x+1))
-                data.loc[x, "Passenger Fare"] = np.nan
-                break
-            if 'Y' in response.upper():
-                ignoreMissingDollarState = 1
-                break
+    if data.loc[x, "Passenger Fare"][0] != '$':
+        if ignoreMissingDollarState == -1:
+            while not pandas.isna(data.loc[x, "Passenger Fare"]):
+                response = input("Missing $ sign for Passenger ID "+str(x+1)+", keep value(s) for all future occurrence? Y/N: ")
+                if 'N' in response.upper():
+                    # print("Removing value for Passenger ID "+str(x+1))
+                    # data.loc[x, "Passenger Fare"] = np.nan
+                    ignoreMissingDollarState = 0
+                    break
+                if 'Y' in response.upper():
+                    ignoreMissingDollarState = 1
+                    break
+        if ignoreMissingDollarState == 0:
+            print("Removing value for Passenger ID "+str(x+1))
+            data.loc[x, "Passenger Fare"] = np.nan
     elif data.loc[x, "Passenger Fare"][0] == '$':
         data.loc[x, "Passenger Fare"] = data.loc[x, "Passenger Fare"].replace("$","")
     if not pandas.isna(data.loc[x, "Passenger Fare"]):
