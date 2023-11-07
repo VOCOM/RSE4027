@@ -32,9 +32,9 @@ def Clean(data):
     data["Gender"] = data["Gender"].replace({"male" : 0}, regex=True)
     data["Survived"] = data["Survived"].replace({"Yes" : 1}, regex=True)
     data["Survived"] = data["Survived"].replace({"No" : 0}, regex=True)
-    data["NumParentChild"].convert_dtypes(convert_integer=True)
-    data["NumSiblingSpouse"].convert_dtypes(convert_integer=True)
-    data["Age"].convert_dtypes(convert_integer=True)
+    data["NumParentChild"] = data["NumParentChild"].astype(int)
+    data["NumSiblingSpouse"] = data["NumSiblingSpouse"].astype(int)
+    data["Age"] = data["Age"].astype(float)
 
     # Using apply() start
     # Pros: Apply custom functions to every elements in the selected column (eg, Passenger Fare, Ticket Class, etc.)
@@ -127,5 +127,6 @@ def Clean(data):
             data.loc[x, "Embarkation Country"] = input("Invalid Embarkation Country for Passenger ID "+str(x+1)+", key in correct value (single alphabetical character): ")
         data.loc[x, "Embarkation Country"] = ord(data.loc[x, "Embarkation Country"])
 
+    data['Passenger Fare'] = data['Passenger Fare'].astype(float)
     # Without using apply() end
     return data
