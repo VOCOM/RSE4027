@@ -101,8 +101,7 @@ def Plots(data):
         data['Passenger Fare'].plot(kind="hist", edgecolor='white', bins=maxVal)
         plt.xlabel('Fare Amount')
     elif plotType == "3":
-        label = data["Ticket Class"].unique()
-        label.sort()
+        label = list(data["Ticket Class"].unique())
         ticketClass = data["Ticket Class"].value_counts()
         ax.bar(label, ticketClass)
         plt.xlabel('Ticket Class')
