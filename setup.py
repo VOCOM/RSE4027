@@ -11,6 +11,8 @@
 # - 07/11/23:
 #   Clean data added.
 #   One-hot encoding added.
+# - 10/11/23:
+#   EDA Visualization testing added.
 ##
 
 import os
@@ -20,6 +22,7 @@ from EDA import eda
 import pandas
 from sklearn import linear_model
 
+import matplotlib.pyplot
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -29,6 +32,7 @@ import re
 def Operations():
     global func
     operationList = [
+        "0) EDA Visualization",
         "1) Clear Screen",
         "2) Print data table",
         "3) Data Distributions",
@@ -169,6 +173,10 @@ for x in data.index:
     if data.loc[x, "Embarkation Country"] == "Q":
         data.loc[x, "Q"] = 1
 
+# plt = data[['Ticket Class', 'Survived']].groupby('Ticket Class').mean().Survived.plot(kind='bar')
+# plt.set_xlabel('Ticket Class')
+# plt.set_ylabel('Survival Probability')
+
 data.drop("Embarkation Country", axis="columns", inplace=True)
 # Without using apply() end
 
@@ -207,3 +215,27 @@ while Operations():
             print("Passenger will survive")
         pass
 
+    #EDA visualization starts
+    if func == "0":
+        edaVisualize = input("Visualize plot")
+        if edaVisualize == "1":
+            plt = data[['Ticket Class', 'Survived']].groupby('Ticket Class').mean().Survived.plot(kind='bar')
+            plt.set_xlabel('Ticket Class')
+            plt.set_ylabel('Survival Probability')
+            matplotlib.pyplot.show()
+        if edaVisualize == "2":
+            plt = data[['Gender', 'Survived']].groupby('Gender').mean().Survived.plot(kind='bar')
+            plt.set_xlabel('Gender')
+            plt.set_ylabel('Survival Probability')
+            matplotlib.pyplot.show()
+        if edaVisualize == "3":
+            plt = data[['NumSiblingSpouse', 'Survived']].groupby('NumSiblingSpouse').mean().Survived.plot(kind='bar')
+            plt.set_xlabel('NumSiblingSpouse')
+            plt.set_ylabel('Survival Probability')
+            matplotlib.pyplot.show()
+        if edaVisualize == "4":
+            plt = data[['NumParentChild', 'Survived']].groupby('NumParentChild').mean().Survived.plot(kind='bar')
+            plt.set_xlabel('NumParentChild')
+            plt.set_ylabel('Survival Probability')
+            matplotlib.pyplot.show()
+    #EDA visualization ends
