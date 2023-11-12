@@ -8,6 +8,13 @@
 # - 16/10/23:
 #   Find function added.
 #   User Interface added.
+# - 07/11/23:
+#   Clean data added.
+#   One-hot encoding added.
+# - 10/11/23:
+#   EDA Visualization testing added.
+# - 12/11/23:
+#   Added Survival distributions in the distribution plots
 ##
 
 import os
