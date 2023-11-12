@@ -39,14 +39,18 @@ def Clean(data):
     data["Gender"] = data["Gender"].replace({"male" : 0}, regex=True)
     data["Survived"] = data["Survived"].replace({"Yes" : 1}, regex=True)
     data["Survived"] = data["Survived"].replace({"No" : 0}, regex=True)
-    data["NumParentChild"] = data["NumParentChild"].astype(int)
-    data["NumSiblingSpouse"] = data["NumSiblingSpouse"].astype(int)
-    data["Age"] = data["Age"].astype(float)
+    data["NumParentChild"].convert_dtypes(convert_integer=True)
+    data["NumSiblingSpouse"].convert_dtypes(convert_integer=True)
+    data["Age"].convert_dtypes(convert_integer=True)
     data.insert(len(data.columns), "Abnormal", False)
-    data["Cabin"] = data["Cabin"].apply(str2NaN)
-    data["Embarkation Country"] = data["Embarkation Country"].apply(str2NaN)
+    data.insert(len(data.columns), "C", 0)
+    data.insert(len(data.columns), "S", 0)
+    data.insert(len(data.columns), "Q", 0)
 
     ignoreMissingDollarState = -1 # -1 is unknown, 0 is don't ignore, 1 is ignore
+
+    data["Cabin"] = data["Cabin"].apply(str2NaN)
+    data["Embarkation Country"] = data["Embarkation Country"].apply(str2NaN)
 
     for x in data.index:
         # Clean Passenger Fare
@@ -73,9 +77,8 @@ def Clean(data):
             data.loc[x, "Passenger Fare"] = data.loc[x, "Passenger Fare"].replace("$","")
         if not pandas.isna(data.loc[x, "Passenger Fare"]):
             data.loc[x, "Passenger Fare"] = math.floor(float(data.loc[x, "Passenger Fare"]) * 100)/100
-            data.loc[x, "Passenger Fare"] = "{:.2f}".format(data.loc[x, "Passenger Fare"]) # Process takes awhile
         else:
-            data.loc[x, 'Abnormal'] = True
+            data.loc[x, "Abnormal"] = True
 
         # Clean Ticket Class
         try:
@@ -86,15 +89,15 @@ def Clean(data):
             if int(data.loc[x, "Ticket Class"]) < 1 or int(data.loc[x, "Ticket Class"]) > 3:
                 data.loc[x, "Ticket Class"] = np.nan
         else:
-            data.loc[x, 'Abnormal'] = True
+            data.loc[x, "Abnormal"] = True
 
         # Clean Age
         try:
             data.loc[x, "Age"] = math.floor(float(data.loc[x, "Age"]))
         except ValueError:
             data.loc[x, "Age"] = np.nan
-        if data.loc[x, "Age"] < 1:
-            data.loc[x, 'Abnormal'] = True
+        if pandas.isna(data.loc[x, "Age"]) or data.loc[x, "Age"] == 0:
+            data.loc[x, "Abnormal"] = True
 
         # No clean Ticket Number
 
@@ -105,10 +108,16 @@ def Clean(data):
             data.loc[x, "Embarkation Country"] = data.loc[x, "Embarkation Country"].upper()
             if len(data.loc[x, "Embarkation Country"]) > 1 or not data.loc[x, "Embarkation Country"].isalpha():
                 data.loc[x, "Embarkation Country"] = np.nan
-        else:
+        if data.loc[x, "Embarkation Country"] == "C":
+            data.loc[x, "C"] = 1
+        if data.loc[x, "Embarkation Country"] == "S":
+            data.loc[x, "S"] = 1
+        if data.loc[x, "Embarkation Country"] == "Q":
+            data.loc[x, "Q"] = 1
+        if data.loc[x, "C"] + data.loc[x, "S"] + data.loc[x, "Q"] != 1:
             data.loc[x, "Abnormal"] = True
 
-    data["Passenger Fare"] = data["Passenger Fare"].astype(float)
+    data.drop("Embarkation Country", axis="columns", inplace=True)
     return data
 
 def Extract(data):

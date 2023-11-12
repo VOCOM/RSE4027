@@ -71,6 +71,7 @@ def Menu():
         os.system(clearCMD)
 
 def Plots(data):
+    x = 0
     maxVal = 0
     label = []
     plotList = [
@@ -103,15 +104,47 @@ def Plots(data):
         plt.xlabel('Fare Amount')
     elif plotType == "3":
         label = list(data["Ticket Class"].unique())
-        ticketClass = data["Ticket Class"].value_counts()
-        ax.bar(label, ticketClass)
+        ticketSurvival = {
+            'Survived' : [0, 0, 0],
+            'Not Survived' : [0, 0, 0]
+        }
+        while x < len(data):
+            if data.loc[x,'Survived']:
+                ticketSurvival['Survived'][data.loc[x,'Ticket Class']-1] += 1
+            else:
+                ticketSurvival['Not Survived'][data.loc[x,'Ticket Class']-1] += 1
+            x+=1
+        bottom = np.zeros(3)
+        for boolean, count in ticketSurvival.items():
+            ax.bar(label, count, label=boolean, bottom=bottom)
+            bottom+=count
         plt.xlabel('Ticket Class')
     elif plotType == "4":
-        embarkation = data["Embarkation Country"].value_counts()
-        label = list(data["Embarkation Country"].unique())
-        if np.nan in label:
-            label.remove(np.nan)
-        ax.bar(label,embarkation)
+        label = ['Q', 'C', 'S']
+        countrySurvival = {
+            'Survived' : [0, 0, 0],
+            'Not Survived' : [0, 0, 0]
+        }
+        while x < len(data):
+            if data.loc[x, 'Survived']:
+                if data.loc[x,'Q']:
+                    countrySurvival['Survived'][0]+=1
+                if data.loc[x,'C']:
+                    countrySurvival['Survived'][1]+=1
+                if data.loc[x,'S']:
+                    countrySurvival['Survived'][2]+=1
+            else:
+                if data.loc[x,'Q']:
+                    countrySurvival['Not Survived'][0]+=1
+                if data.loc[x,'C']:
+                    countrySurvival['Not Survived'][1]+=1
+                if data.loc[x,'S']:
+                    countrySurvival['Not Survived'][2]+=1
+            x+=1
+        bottom = np.zeros(3)
+        for boolean, count in countrySurvival.items():
+            ax.bar(label, count, label=boolean, bottom=bottom)
+            bottom+=count
         plt.xlabel('Embarkation Country')
     elif plotType == "5":
         age = data['Age'].value_counts()
@@ -120,24 +153,65 @@ def Plots(data):
         plt.xlabel('Passenger Age')
     elif plotType == "6":
         label = ['Male', 'Female']
-        gender = data['Gender'].value_counts()
-        ax.bar(label,gender)
+        genderSurvival = {
+            'Survival' : [0, 0],
+            'Not Survival' : [0, 0]
+        }
+        while x < len(data):
+            if data.loc[x, 'Survived']:
+                genderSurvival['Survival'][data.loc[x,'Gender']]+=1
+            else:
+                genderSurvival['Not Survival'][data.loc[x,'Gender']]+=1
+            x+=1
+        bottom = np.zeros(2)
+        for boolean, count in genderSurvival.items():
+            ax.bar(label, count, label=boolean, bottom=bottom)
+            bottom+=count
         plt.xlabel('Gender')
     elif plotType == "7":
         for val in data['NumParentChild']:
             if val > maxVal:
                 maxVal = val
-        data['NumParentChild'].plot(kind="hist", edgecolor='white', bins=maxVal)
+        label = list(data["NumParentChild"].unique())
+        VertDependantSurvival = {
+            'Survived' : np.zeros(maxVal+1, dtype=int),
+            'Not Survived' : np.zeros(maxVal+1, dtype=int)
+        }
+        while x < len(data):
+            if data.loc[x,'Survived']:
+                VertDependantSurvival['Survived'][data.loc[x,'NumParentChild']]+=1
+            else:
+                VertDependantSurvival['Not Survived'][data.loc[x,'NumParentChild']]+=1
+            x+=1
+        bottom = np.zeros(maxVal+1)
+        for boolean, count in VertDependantSurvival.items():
+            ax.bar(label, count, label=boolean, bottom=bottom)
+            bottom+=count
         plt.xlabel('Number of Parents & Children')
     elif plotType == "8":
         for val in data['NumSiblingSpouse']:
             if val > maxVal:
                 maxVal = val
-        data['NumSiblingSpouse'].plot(kind="hist", edgecolor='white', bins=8)
+        label = list(data["NumSiblingSpouse"].unique())
+        VertDependantSurvival = {
+            'Survived' : np.zeros(maxVal+1, dtype=int),
+            'Not Survived' : np.zeros(maxVal+1, dtype=int)
+        }
+        while x < len(data):
+            if data.loc[x,'Survived']:
+                VertDependantSurvival['Survived'][data.loc[x,'NumSiblingSpouse']]+=1
+            else:
+                VertDependantSurvival['Not Survived'][data.loc[x,'NumSiblingSpouse']]+=1
+            x+=1
+        bottom = np.zeros(maxVal+1)
+        for boolean, count in VertDependantSurvival.items():
+            ax.bar(label, count, label=boolean, bottom=bottom)
+            bottom+=count
         plt.xlabel('Number of Siblings & Spouses')
     else:
         os.system(clearCMD)
         return False
+    ax.legend(loc="upper right")
     plt.ylabel('Number of Passengers')
     plt.show()
     plt.close()
@@ -150,11 +224,13 @@ def LogisticRegression():
     inputParameters = [
         'Passenger Fare',
         'Ticket Class',
-        'Embarkation Country',
         'Age',
         'Gender',
         'NumParentChild',
-        'NumSiblingSpouse'
+        'NumSiblingSpouse',
+        'Q',
+        'C',
+        'S'
     ]
     X = extractedData[inputParameters].values
     y = list(extractedData['Survived'])
@@ -166,19 +242,21 @@ def LogisticRegression():
     while i < len(test):
         inFare = test['Passenger Fare'][i]
         inClass = test['Ticket Class'][i]
-        inEmbark = test['Embarkation Country'][i]
         inAge = test['Age'][i]
         inGender = test['Gender'][i]
         inParent = test['NumParentChild'][i]
         inSibling = test['NumSiblingSpouse'][i]
-        predictedSurvival = regr.predict([[inFare, inClass, inEmbark, inAge, inGender, inParent, inSibling]])
+        inQ = test['Q'][i]
+        inC = test['C'][i]
+        inS = test['S'][i]
+        predictedSurvival = regr.predict([[inFare, inClass, inAge, inGender, inParent, inSibling, inQ, inC, inS]])
         predictions.append(predictedSurvival)
         i += 1
 
     print("Logistic Regression Metrics")
-    precision = precision_score(test['Survived'], predictions)
-    recall = recall_score(test['Survived'], predictions)
-    fScore = f1_score(test['Survived'], predictions)
+    precision = precision_score(list(test['Survived']), predictions)
+    recall = recall_score(list(test['Survived']), predictions)
+    fScore = f1_score(list(test['Survived']), predictions)
     print("Precision: {:.5f}".format(precision))
     print("Recall:    {:.5f}".format(recall))
     print("F1 Score:  {:.5f}".format(fScore))
