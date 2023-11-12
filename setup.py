@@ -172,17 +172,72 @@ for x in data.index:
         data.loc[x, "S"] = 1
     if data.loc[x, "Embarkation Country"] == "Q":
         data.loc[x, "Q"] = 1
-
-# plt = data[['Ticket Class', 'Survived']].groupby('Ticket Class').mean().Survived.plot(kind='bar')
-# plt.set_xlabel('Ticket Class')
-# plt.set_ylabel('Survival Probability')
-
-data.drop("Embarkation Country", axis="columns", inplace=True)
+# data.drop("Embarkation Country", axis="columns", inplace=True)
 # Without using apply() end
+
+# EDA visualization start
+#data['Passenger Fare'].plot(kind="hist", edgecolor='white', bins=maxVal)
+def VisualizeEda(visualizeInput):
+    category = "None"
+    categorizedDataList = ["Ticket Class", "Embarkation Country", "Gender", "NumSiblingSpouse", "NumParentChild"]
+    if visualizeInput == "1":
+        binCategory = "Passenger Fare"
+        # Link to pandas.cut documentary
+        # https://pandas.pydata.org/docs/reference/api/pandas.cut.html
+        # Link to source
+        # https://stackoverflow.com/questions/43005462/pandas-bar-plot-with-binned-range
+        # out = pandas.cut(data[binCategory], bins=[0,20,40,60,80,100], include_lowest=True)
+        # ax = out.value_counts(sort=False).plot.bar()
+        # matplotlib.pyplot.show()
+
+        # plt = data[[binCategory, 'Survived']].groupby(binCategory).mean().Survived.plot(kind='bar', )
+        # plt.set_xlabel(binCategory)
+        # plt.set_ylabel('Survival Probability')
+        # matplotlib.pyplot.show()
+        
+        # data['Age'] = pandas.to_numeric(data['Age'], errors='coerce')
+        # data = data.dropna(subset=['Age'])
+        # data['Age_bin'] = pandas.cut(data['Age'], bins=range(0,int(data['Age'].max()) + 6, 5), right=False)
+        # age_grouped = data.groupby('Age_bin')['Survived'].mean()
+        # ax = age_grouped.plot(kind='bar', width=0.8, color='skyblue', edgecolor='white')
+        # ax.set_xlabel('Age group (5-year intervals)')
+        # ax.set_ylabel('Survival Rate')
+        # matplotlib.pyplot.show()
+
+    elif visualizeInput == "2":
+        category = "Ticket Class"
+    elif visualizeInput == "3":
+        category = "Embarkation Country"
+    elif visualizeInput == "5":
+        category = "Gender"
+    elif visualizeInput == "6":
+        category = "NumSiblingSpouse"
+    elif visualizeInput == "7":
+        category = "NumParentChild"
+    if category in categorizedDataList:
+        plt = data[[category, 'Survived']].groupby(category).mean().Survived.plot(kind='bar')
+        plt.set_xlabel(category)
+        plt.set_ylabel('Survival Probability')
+        matplotlib.pyplot.show()
 
 func = 0
 while Operations():
     os.system("clear")
+
+    if func == "0":
+        visualizeList = [
+            "1) Passenger Fare vs Survived",
+            "2) Ticket Class vs Survived",
+            "3) Embarkation Country vs Survived",
+            "4) Age vs Survived",
+            "5) Gender Class vs Survived",
+            "6) NumSiblingSpouse vs Survived",
+            "7) NumParentChild vs Survived"
+        ]
+        for visualize in visualizeList:
+            print(visualize)
+        edaVisualize = input("Visualize plot: ")
+        VisualizeEda(edaVisualize)
     if func == "1":
         pass
     if func == "2":
@@ -214,28 +269,3 @@ while Operations():
         else:
             print("Passenger will survive")
         pass
-
-    #EDA visualization starts
-    if func == "0":
-        edaVisualize = input("Visualize plot")
-        if edaVisualize == "1":
-            plt = data[['Ticket Class', 'Survived']].groupby('Ticket Class').mean().Survived.plot(kind='bar')
-            plt.set_xlabel('Ticket Class')
-            plt.set_ylabel('Survival Probability')
-            matplotlib.pyplot.show()
-        if edaVisualize == "2":
-            plt = data[['Gender', 'Survived']].groupby('Gender').mean().Survived.plot(kind='bar')
-            plt.set_xlabel('Gender')
-            plt.set_ylabel('Survival Probability')
-            matplotlib.pyplot.show()
-        if edaVisualize == "3":
-            plt = data[['NumSiblingSpouse', 'Survived']].groupby('NumSiblingSpouse').mean().Survived.plot(kind='bar')
-            plt.set_xlabel('NumSiblingSpouse')
-            plt.set_ylabel('Survival Probability')
-            matplotlib.pyplot.show()
-        if edaVisualize == "4":
-            plt = data[['NumParentChild', 'Survived']].groupby('NumParentChild').mean().Survived.plot(kind='bar')
-            plt.set_xlabel('NumParentChild')
-            plt.set_ylabel('Survival Probability')
-            matplotlib.pyplot.show()
-    #EDA visualization ends
