@@ -11,18 +11,25 @@
 # - 07/11/23:
 #   Clean data added.
 #   One-hot encoding added.
+# - 08/11/23:
+#   Added MAE, MSE, RMSE calculation in Logistic Regression
 # - 10/11/23:
 #   EDA Visualization testing added.
 # - 12/11/23:
 #   Added Survival distributions in the distribution plots
+# - 12/11/23:
+#   Added KNearest
 ##
 
+from audioop import rms
 import os
 
 import pandas
 import numpy as np
 from sklearn import linear_model
-from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import precision_score, recall_score, f1_score, r2_score
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 from EDA import eda
@@ -39,6 +46,7 @@ def Operations():
         "5) Data Distributions",
         "6) Filtered table",
         "7) Logistic Regression",
+        "8) K-Nearest Neighbor",
         "E) Exit Program"
     ]
 
@@ -244,6 +252,7 @@ def LogisticRegression():
     regr = regr.fit(X,y)
 
     predictions = []
+    actualVal = test['Survived'].values
 
     i = 0
     while i < len(test):
@@ -264,10 +273,63 @@ def LogisticRegression():
     precision = precision_score(list(test['Survived']), predictions)
     recall = recall_score(list(test['Survived']), predictions)
     fScore = f1_score(list(test['Survived']), predictions)
+    mae, mse, rmse = eda.ErrorCalc(predictions, actualVal)
     print("Precision: {:.5f}".format(precision))
     print("Recall:    {:.5f}".format(recall))
     print("F1 Score:  {:.5f}".format(fScore))
+    print("MAE: {:.5f}".format(mae))
+    print("MSE:    {:.5f}".format(mse))
+    print("RMSE:  {:.5f}".format(rmse))
+
     print()
+
+
+
+def KNearest():
+    # K Nearest Neighbor
+    K = 200
+
+    inputParameters = [
+        'Passenger Fare',
+        'Ticket Class',
+        'Age',
+        'Gender',
+        'NumParentChild',
+        'NumSiblingSpouse',
+        'Q',
+        'C',
+        'S'
+    ]
+    X = extractedData[inputParameters].values
+    y = list(extractedData['Survived'])
+    
+    knn_model = KNeighborsRegressor(n_neighbors = K)
+    knn_model.fit(X, y)
+    knn_model.feature_names_in_ = inputParameters
+    
+    actualVal = list(test['Survived'].values)
+    predictions = knn_model.predict(test[inputParameters]) 
+
+    predictions_rounded = np.round(predictions).astype(int)
+
+    print("KNN Metrics")
+    precision = precision_score(actualVal, predictions_rounded)
+    recall = recall_score(actualVal, predictions_rounded)
+    fScore = f1_score(actualVal, predictions_rounded)
+
+    r2 = r2_score(actualVal, predictions_rounded)
+    mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
+
+    print("Precision: {:.5f}".format(precision))
+    print("Recall:    {:.5f}".format(recall))
+    print("F1 Score:  {:.5f}".format(fScore))
+    print("MAE: {:.5f}".format(mae))
+    print("MSE:    {:.5f}".format(mse))
+    print("RMSE:  {:.5f}".format(rmse))
+
+    print()
+
+
 
 def FilteredTable():
     header = list(extractedData.keys())
@@ -321,3 +383,6 @@ while Operations():
         FilteredTable()
     if func == "7":
         LogisticRegression()
+
+    if func == "8":
+        KNearest()
