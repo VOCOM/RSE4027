@@ -31,6 +31,8 @@ clearCMD = "cls"
 
 def Operations():
     global func
+    global testedSurvivors
+    global testedNonSurvivors
     operationList = [
         "1) Clear Screen",
         "2) Print original data table",
@@ -39,6 +41,8 @@ def Operations():
         "5) Data Distributions",
         "6) Filtered table",
         "7) Logistic Regression",
+        "8) K-Nearest Neighbour",
+        "9) Prediction Results",
         "E) Exit Program"
     ]
 
@@ -225,8 +229,55 @@ def Plots(data):
     os.system(clearCMD)
     return True
 
+def PredictionPlots(data):
+    x = 0
+    maxVal = 0
+    label = []
+    plotList = [
+        '1) Fare distribution',
+        '2) Ticket distribution',
+        '3) Country distribution',
+        '4) Age distribution',
+        '5) Gender distribution',
+        '6) Vertical Dependents distribution',
+        '7) Horizontal Dependents distribution',
+        'E) Return to menu'
+    ]
+    for plotOption in plotList:
+        print(plotOption)
+    plotType = input("Plot Type:")
+    fig, ax = plt.subplots()
+    if plotType == "1":
+        pass
+    if plotType == "2":
+        label = list(data["Ticket Class"].unique())
+        count = list(data["Ticket Class"].value_counts())
+        ax.bar(label, count)
+        plt.xlabel("Ticket Class")
+    if plotType == "3":
+        pass
+    if plotType == "4":
+        pass
+    if plotType == "5":
+        pass
+    if plotType == "6":
+        pass
+    if plotType == "7":
+        pass
+    if plotType == "8":
+        pass
+    if plotType == "E":
+        pass
+    ax.legend(loc="upper right")
+    plt.ylabel('Number of Passengers')
+    plt.show()
+    plt.close()
+    os.system(clearCMD)
+
 def LogisticRegression():
     # Logistic Regression
+    global testedSurvivors
+    global testedNonSurvivors
     regr = linear_model.LogisticRegression(max_iter=1000)
     inputParameters = [
         'Passenger Fare',
@@ -258,6 +309,10 @@ def LogisticRegression():
         inS = test['S'][i]
         predictedSurvival = regr.predict([[inFare, inClass, inAge, inGender, inParent, inSibling, inQ, inC, inS]])
         predictions.append(predictedSurvival)
+        if predictedSurvival:
+            testedSurvivors.loc[len(testedSurvivors.index)] = test.loc[i]
+        else:
+            testedNonSurvivors.loc[len(testedNonSurvivors.index)] = test.loc[i]
         i += 1
 
     print("Logistic Regression Metrics")
@@ -279,6 +334,34 @@ def FilteredTable():
         os.system(clearCMD)
         print("Category not found\n")
 
+def KNearestNeigbour():
+    pass
+
+def PrintPredictionResults():
+    global testedSurvivors
+    global testedNonSurvivors
+    func = 0
+    resultsOptions = [
+        "1) Survivors",
+        "2) Non Survivors",
+        "E) Exit"
+    ]
+    os.system(clearCMD)
+    if len(testedSurvivors) == 0 or len(testedNonSurvivors) == 0:
+        print("No data detected! Apply a model first.")
+        return
+    while func != "E":
+        for options in resultsOptions:
+            print(options)
+        func = input("Predictions to list:").capitalize()
+        os.system(clearCMD)
+        if func == "1":
+            print("Survivors\n", testedSurvivors.to_string(), '\n')
+            PredictionPlots(testedSurvivors)
+        if func == "2":
+            print("Non Survivors\n", testedNonSurvivors.to_string(), '\n')
+            PredictionPlots(testedNonSurvivors)
+
 dataPath = ""
 Menu()
 
@@ -290,6 +373,9 @@ test = eda.Clean(test)
 
 extractedData = eda.Extract(rawData)
 test = eda.Extract(test)
+
+testedSurvivors = pandas.DataFrame(columns=test.columns)
+testedNonSurvivors = pandas.DataFrame(columns=test.columns)
 
 func = 0
 while Operations():
@@ -321,3 +407,7 @@ while Operations():
         FilteredTable()
     if func == "7":
         LogisticRegression()
+    if func == "8":
+        KNearestNeigbour()
+    if func == "9":
+        PrintPredictionResults()
