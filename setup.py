@@ -13,6 +13,8 @@
 #   One-hot encoding added.
 # - 10/11/23:
 #   EDA Visualization testing added.
+# - 14/11/23:
+#   isNA for specific column and correlation added. 
 ##
 
 import os
@@ -28,6 +30,8 @@ import numpy as np
 
 import math
 import re
+
+import seaborn as sns # pip install seaborn
 
 def Operations():
     global func
@@ -176,9 +180,9 @@ for x in data.index:
 # Without using apply() end
 
 # EDA visualization start
-#data['Passenger Fare'].plot(kind="hist", edgecolor='white', bins=maxVal)
 def VisualizeEda(visualizeInput):
     category = "None"
+    corrDataList = ["Passenger Fare", "Ticket Class", "Age", "Gender", "NumSiblingSpouse", "NumParentChild"]
     categorizedDataList = ["Ticket Class", "Embarkation Country", "Gender", "NumSiblingSpouse", "NumParentChild"]
     if visualizeInput == "1":
         binCategory = "Passenger Fare"
@@ -203,7 +207,6 @@ def VisualizeEda(visualizeInput):
         # ax.set_xlabel('Age group (5-year intervals)')
         # ax.set_ylabel('Survival Rate')
         # matplotlib.pyplot.show()
-
     elif visualizeInput == "2":
         category = "Ticket Class"
     elif visualizeInput == "3":
@@ -219,6 +222,16 @@ def VisualizeEda(visualizeInput):
         plt.set_xlabel(category)
         plt.set_ylabel('Survival Probability')
         matplotlib.pyplot.show()
+    if visualizeInput == "8":
+        for corrData in corrDataList:
+            validDataPercentage = data[corrData].isnull().sum() / len(data.index)
+            print("Percentage of NaN in", corrData, ":", validDataPercentage*100,"%")
+    if visualizeInput == "9":
+        corr_matrix = data[corrDataList].corr()
+        matplotlib.pyplot.figure(figsize=(9, 8))
+        sns.heatmap(data = corr_matrix, cmap='BrBG', annot=True, linewidths=0.2)
+        matplotlib.pyplot.show()
+
 
 func = 0
 while Operations():
@@ -232,7 +245,9 @@ while Operations():
             "4) Age vs Survived",
             "5) Gender Class vs Survived",
             "6) NumSiblingSpouse vs Survived",
-            "7) NumParentChild vs Survived"
+            "7) NumParentChild vs Survived",
+            "8) Percentage of NaN in data column",
+            "9) Correlation of all numerical data columns"
         ]
         for visualize in visualizeList:
             print(visualize)
