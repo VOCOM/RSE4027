@@ -25,6 +25,8 @@ from sklearn import linear_model
 from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.neighbors import KNeighborsRegressor
 import matplotlib.pyplot as plt
+import matplotlib.pyplot
+import seaborn as sns
 
 from EDA import eda
 
@@ -50,6 +52,7 @@ def EDAOperations():
         "4) Print original test table",
         "5) Print extracted test table",
         "6) Data Distributions",
+        "7) EDA Visualization",
         "E) Exit Program"
     ]
 
@@ -463,6 +466,74 @@ def PrintPredictionResults():
                 userInput = PredictionPlots(testedNonSurvivors)
             userInput = ''
         os.system(clearCMD)
+
+def VisualizeEda(data, visualizeInput):
+    category = "None"
+    isNaDataList = ["Passenger Fare", "Ticket Class", "Ticket Number", "Cabin", "Age", "Gender", "NumSiblingSpouse", "NumParentChild", "Survived"]
+    corrDataList = ["Passenger Fare", "Ticket Class", "Age", "Gender", "NumSiblingSpouse", "NumParentChild", "Survived"]
+    categorizedDataList = ["Ticket Class", "C", "Gender", "NumSiblingSpouse", "NumParentChild"]
+    if visualizeInput == "1":
+        category = "Ticket Class"
+    elif visualizeInput == "2":
+        category = "C"
+    elif visualizeInput == "3":
+        category = "Gender"
+    elif visualizeInput == "4":
+        category = "NumSiblingSpouse"
+    elif visualizeInput == "5":
+        category = "NumParentChild"
+    if category in categorizedDataList:
+        plt = data[[category, 'Survived']].groupby(category).mean().Survived.plot(kind='bar')
+        plt.set_xlabel(category)
+        plt.set_ylabel('Survival Probability')
+        matplotlib.pyplot.show()
+    if visualizeInput == "6":
+        for isNaData in isNaDataList:
+            validDataPercentage = data[isNaData].isnull().sum() / len(data.index)
+            print("Percentage of NaN in", isNaData, ":", validDataPercentage*100,"%")
+            if isNaData == "Cabin":
+                embarkationIsnaSum = len(data.index)-(data['C'].sum()+data['Q'].sum()+data['S'].sum())
+                print("Percentage of NaN in Embarkation Country : ", (embarkationIsnaSum/len(data.index))*100)
+    if visualizeInput == "7":
+        corr_matrix = data[corrDataList].corr()
+        matplotlib.pyplot.figure(figsize=(9, 8))
+        sns.heatmap(data = corr_matrix, cmap='BrBG', annot=True, linewidths=0.2)
+        matplotlib.pyplot.show()
+    if visualizeInput == "0":
+        # x = 0
+        # survivedQ = 0
+        # survivedC = 0
+        # survivedS = 0
+        # while x < len(data):
+        #     if data.loc[x, 'Survived']:
+        #         if data.loc[x, 'Q']:
+        #             survivedQ += 1
+        #         if data.loc[x, 'C']:
+        #             survivedC += 1
+        #         if data.loc[x, 'S']:
+        #             survivedS += 1
+        #     x += 1
+        survivedQ = data[(data['Survived'] == 1) & (data['Q'] == 1)]['Q'].sum()
+        survivedC = data[(data['Survived'] == 1) & (data['C'] == 1)]['C'].sum()
+        survivedS = data[(data['Survived'] == 1) & (data['S'] == 1)]['S'].sum()
+        totalQ = data['Q'].sum()
+        totalC = data['C'].sum()
+        totalS = data['S'].sum()
+        survivedPctgQ = survivedQ / totalQ if totalQ != 0 else 0
+        survivedPctgC = survivedC / totalC if totalC != 0 else 0
+        survivedPctgS = survivedS / totalS if totalS != 0 else 0
+        tmpdata = {
+            'survivedQ': [survivedPctgQ],
+            'survivedC': [survivedPctgC],
+            'survivedS': [survivedPctgS]
+        }
+        tmpdf = pandas.DataFrame(tmpdata)
+        plt = tmpdf[['survivedQ','survivedC','survivedS']].plot(kind='bar',edgecolor='white')
+        plt.set_xticks([])
+        plt.set_xticklabels([])
+        plt.set_xlabel('Embarkation Country')
+        plt.set_ylabel('Survival Probability')
+        matplotlib.pyplot.show()
 
 # dataPath = ""
 # Menu()

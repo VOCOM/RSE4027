@@ -1,5 +1,5 @@
 import os
-from setup import Setup, EDAOperations, Plots
+from setup import Setup, EDAOperations, Plots, VisualizeEda
 from EDA.eda import Clean, Extract
 
 clearCMD = 'cls'
@@ -39,5 +39,19 @@ while userInput != "E":
         print()
         while Plots(data):
             pass
+    if userInput == "7":
+        visualizeList = [
+            "1) Ticket Class vs Survived",
+            "2) Embarkation Country vs Survived",
+            "3) Gender Class vs Survived",
+            "4) NumSiblingSpouse vs Survived",
+            "5) NumParentChild vs Survived",
+            "6) Percentage of NaN in data column",
+            "7) Correlation of all numerical data columns"
+        ]
+        for visualize in visualizeList:
+            print(visualize)
+        edaVisualize = input("Visualize plot: ")
+        VisualizeEda(rawTrainData, edaVisualize)
     
     userInput = EDAOperations()
