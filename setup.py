@@ -335,7 +335,48 @@ def FilteredTable():
         print("Category not found\n")
 
 def KNearestNeigbour():
-    pass
+    # K Nearest Neighbor
+    K = 200
+
+    inputParameters = [
+        'Passenger Fare',
+        'Ticket Class',
+        'Age',
+        'Gender',
+        'NumParentChild',
+        'NumSiblingSpouse',
+        'Q',
+        'C',
+        'S'
+    ]
+    X = extractedData[inputParameters].values
+    y = list(extractedData['Survived'])
+    
+    knn_model = KNeighborsRegressor(n_neighbors = K)
+    knn_model.fit(X, y)
+    knn_model.feature_names_in_ = inputParameters
+    
+    actualVal = list(test['Survived'].values)
+    predictions = knn_model.predict(test[inputParameters]) 
+
+    predictions_rounded = np.round(predictions).astype(int)
+
+    print("KNN Metrics")
+    precision = precision_score(actualVal, predictions_rounded)
+    recall = recall_score(actualVal, predictions_rounded)
+    fScore = f1_score(actualVal, predictions_rounded)
+
+    r2 = r2_score(actualVal, predictions_rounded)
+    mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
+
+    print("Precision: {:.5f}".format(precision))
+    print("Recall:    {:.5f}".format(recall))
+    print("F1 Score:  {:.5f}".format(fScore))
+    print("MAE: {:.5f}".format(mae))
+    print("MSE:    {:.5f}".format(mse))
+    print("RMSE:  {:.5f}".format(rmse))
+
+    print()
 
 def PrintPredictionResults():
     global testedSurvivors
