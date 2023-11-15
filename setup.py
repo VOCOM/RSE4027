@@ -23,6 +23,7 @@ import pandas
 import numpy as np
 from sklearn import linear_model
 from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.neighbors import KNeighborsRegressor
 import matplotlib.pyplot as plt
 
 from EDA import eda
@@ -245,7 +246,7 @@ def PredictionPlots(data):
     ]
     for plotOption in plotList:
         print(plotOption)
-    plotType = input("Plot Type:")
+    plotType = input("Plot Type:").capitalize()
     fig, ax = plt.subplots()
     if plotType == "1":
         pass
@@ -266,16 +267,19 @@ def PredictionPlots(data):
         pass
     if plotType == "8":
         pass
-    if plotType == "E":
-        pass
-    ax.legend(loc="upper right")
+    if plotType == "E" or plotType == "":
+        plt.close()
+        return plotType
     plt.ylabel('Number of Passengers')
     plt.show()
     plt.close()
     os.system(clearCMD)
+    return plotType
 
 def LogisticRegression():
     # Logistic Regression
+    global lastAppliedModel
+    lastAppliedModel = 'Logistic Regression'
     global testedSurvivors
     global testedNonSurvivors
     regr = linear_model.LogisticRegression(max_iter=1000)
@@ -315,6 +319,10 @@ def LogisticRegression():
             testedNonSurvivors.loc[len(testedNonSurvivors.index)] = test.loc[i]
         i += 1
 
+    actualVal = list(test['Survived'].values)
+    predictions_rounded = np.round(predictions).astype(int)
+    mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
+
     print("Logistic Regression Metrics")
     precision = precision_score(list(test['Survived']), predictions)
     recall = recall_score(list(test['Survived']), predictions)
@@ -322,6 +330,9 @@ def LogisticRegression():
     print("Precision: {:.5f}".format(precision))
     print("Recall:    {:.5f}".format(recall))
     print("F1 Score:  {:.5f}".format(fScore))
+    print("MAE:       {:.5f}".format(mae))
+    print("MSE:       {:.5f}".format(mse))
+    print("RMSE:      {:.5f}".format(rmse))
     print()
 
 def FilteredTable():
@@ -336,6 +347,12 @@ def FilteredTable():
 
 def KNearestNeigbour():
     # K Nearest Neighbor
+    global lastAppliedModel
+    global testedSurvivors
+    global testedNonSurvivors
+    testedSurvivors = testedSurvivors.iloc[0:0]
+    testedNonSurvivors = testedNonSurvivors.iloc[0:0]
+    lastAppliedModel = 'K-Nearest Neighbour'
     K = 200
 
     inputParameters = [
@@ -361,26 +378,35 @@ def KNearestNeigbour():
 
     predictions_rounded = np.round(predictions).astype(int)
 
+    i = 0
+    for prediction in predictions_rounded:
+        if prediction:
+            testedSurvivors.loc[len(testedSurvivors)] = test.loc[i]
+        else:
+            testedNonSurvivors.loc[len(testedNonSurvivors)] = test.loc[i]
+        i += 1
+
     print("KNN Metrics")
     precision = precision_score(actualVal, predictions_rounded)
     recall = recall_score(actualVal, predictions_rounded)
     fScore = f1_score(actualVal, predictions_rounded)
 
-    r2 = r2_score(actualVal, predictions_rounded)
+    # r2 = r2_score(actualVal, predictions_rounded)
     mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
 
     print("Precision: {:.5f}".format(precision))
     print("Recall:    {:.5f}".format(recall))
     print("F1 Score:  {:.5f}".format(fScore))
-    print("MAE: {:.5f}".format(mae))
-    print("MSE:    {:.5f}".format(mse))
-    print("RMSE:  {:.5f}".format(rmse))
+    print("MAE:       {:.5f}".format(mae))
+    print("MSE:       {:.5f}".format(mse))
+    print("RMSE:      {:.5f}".format(rmse))
 
     print()
 
 def PrintPredictionResults():
     global testedSurvivors
     global testedNonSurvivors
+    global lastAppliedModel
     func = 0
     resultsOptions = [
         "1) Survivors",
@@ -392,16 +418,23 @@ def PrintPredictionResults():
         print("No data detected! Apply a model first.")
         return
     while func != "E":
+        print("Model Used:", lastAppliedModel)
         for options in resultsOptions:
             print(options)
         func = input("Predictions to list:").capitalize()
-        os.system(clearCMD)
         if func == "1":
-            print("Survivors\n", testedSurvivors.to_string(), '\n')
-            PredictionPlots(testedSurvivors)
+            while func != 'E':
+                os.system(clearCMD)
+                print("Survivors\n", testedSurvivors.to_string(), '\n')
+                func = PredictionPlots(testedSurvivors)
+            func = ''
         if func == "2":
-            print("Non Survivors\n", testedNonSurvivors.to_string(), '\n')
-            PredictionPlots(testedNonSurvivors)
+            while func != 'E':
+                os.system(clearCMD)
+                print("Non Survivors\n", testedNonSurvivors.to_string(), '\n')
+                func = PredictionPlots(testedNonSurvivors)
+            func = ''
+        os.system(clearCMD)
 
 dataPath = ""
 Menu()
@@ -418,16 +451,21 @@ test = eda.Extract(test)
 testedSurvivors = pandas.DataFrame(columns=test.columns)
 testedNonSurvivors = pandas.DataFrame(columns=test.columns)
 
+lastAppliedModel = ''
+
 func = 0
 while Operations():
     os.system(clearCMD)
     if func == "1":
         pass
     if func == "2":
+        print("Input Training Data")
         print(rawData.to_string(), "\n")
     if func == "3":
+        print("Cleaned Training Data")
         print(extractedData.to_string(), "\n")
     if func == "4":
+        print("Cleaned Testing Data")
         print(test.to_string(), "\n")
     if func == "5":
         os.system(clearCMD)
