@@ -6,7 +6,7 @@
 #
 # Changelog:
 # - 16/10/23:
-#   Find function added.
+#   Find userInputtion added.
 #   User Interface added.
 # - 07/11/23:
 #   Clean data added.
@@ -30,10 +30,37 @@ from EDA import eda
 
 clearCMD = "cls"
 
+def Setup():
+    config = open('config.txt')
+    for line in config.readlines():
+        if "Milestone1_train_csv: " in line:
+            trainingDataPath = line.strip().split("\"")[1].replace("\\","/")
+        if "Milestone1_test_csv: " in line:
+            testDataPath = line.strip().split("\"")[1].replace("\\","/")
+    trainData = pandas.read_csv(trainingDataPath)
+    testData = pandas.read_csv(testDataPath)
+    return trainData, testData
+
+def EDAOperations():
+    userInput = ''
+    operationList = [
+        "1) Clear Screen",
+        "2) Print original data table",
+        "3) Print extracted data table",
+        "4) Print original test table",
+        "5) Print extracted test table",
+        "6) Data Distributions",
+        "E) Exit Program"
+    ]
+
+    for operation in operationList:
+        print(operation)
+    userInput = input("Operation:").capitalize()
+
+    return userInput
+
 def Operations():
-    global func
-    global testedSurvivors
-    global testedNonSurvivors
+    global userInput
     operationList = [
         "1) Clear Screen",
         "2) Print original data table",
@@ -49,9 +76,9 @@ def Operations():
 
     for operation in operationList:
         print(operation)
-    func = input("Operation:")
+    userInput = input("Operation:")
 
-    if func.strip().capitalize() == "E":
+    if userInput.strip().capitalize() == "E":
         return False
     else:
         return True
@@ -221,6 +248,7 @@ def Plots(data):
             bottom+=count
         plt.xlabel('Number of Siblings & Spouses')
     else:
+        plt.close()
         os.system(clearCMD)
         return False
     ax.legend(loc="upper right")
@@ -338,9 +366,9 @@ def LogisticRegression():
 def FilteredTable():
     header = list(extractedData.keys())
     print(header)
-    func = input("Choose a category to search for: ")
-    if func in header:
-        print(extractedData[func].to_string())
+    userInput = input("Choose a category to search for: ")
+    if userInput in header:
+        print(extractedData[userInput].to_string())
     else:
         os.system(clearCMD)
         print("Category not found\n")
@@ -407,7 +435,7 @@ def PrintPredictionResults():
     global testedSurvivors
     global testedNonSurvivors
     global lastAppliedModel
-    func = 0
+    userInput = 0
     resultsOptions = [
         "1) Survivors",
         "2) Non Survivors",
@@ -417,76 +445,76 @@ def PrintPredictionResults():
     if len(testedSurvivors) == 0 or len(testedNonSurvivors) == 0:
         print("No data detected! Apply a model first.")
         return
-    while func != "E":
+    while userInput != "E":
         print("Model Used:", lastAppliedModel)
         for options in resultsOptions:
             print(options)
-        func = input("Predictions to list:").capitalize()
-        if func == "1":
-            while func != 'E':
+        userInput = input("Predictions to list:").capitalize()
+        if userInput == "1":
+            while userInput != 'E':
                 os.system(clearCMD)
                 print("Survivors\n", testedSurvivors.to_string(), '\n')
-                func = PredictionPlots(testedSurvivors)
-            func = ''
-        if func == "2":
-            while func != 'E':
+                userInput = PredictionPlots(testedSurvivors)
+            userInput = ''
+        if userInput == "2":
+            while userInput != 'E':
                 os.system(clearCMD)
                 print("Non Survivors\n", testedNonSurvivors.to_string(), '\n')
-                func = PredictionPlots(testedNonSurvivors)
-            func = ''
+                userInput = PredictionPlots(testedNonSurvivors)
+            userInput = ''
         os.system(clearCMD)
 
-dataPath = ""
-Menu()
+# dataPath = ""
+# Menu()
+# rawData, rawTest = Setup()
+# # rawData = pandas.read_csv(dataPath + "/train/MS_1_Scenario_train.csv")
+# # test = pandas.read_csv(dataPath + "/test/MS_1_Scenario_test.csv")
 
-rawData = pandas.read_csv(dataPath + "/train/MS_1_Scenario_train.csv")
-test = pandas.read_csv(dataPath + "/test/MS_1_Scenario_test.csv")
+# rawData = eda.Clean(rawData)
+# test = eda.Clean(rawTest)
 
-rawData = eda.Clean(rawData)
-test = eda.Clean(test)
+# extractedData = eda.Extract(rawData)
+# test = eda.Extract(test)
 
-extractedData = eda.Extract(rawData)
-test = eda.Extract(test)
+# testedSurvivors = pandas.DataFrame(columns=test.columns)
+# testedNonSurvivors = pandas.DataFrame(columns=test.columns)
 
-testedSurvivors = pandas.DataFrame(columns=test.columns)
-testedNonSurvivors = pandas.DataFrame(columns=test.columns)
+# lastAppliedModel = ''
 
-lastAppliedModel = ''
-
-func = 0
-while Operations():
-    os.system(clearCMD)
-    if func == "1":
-        pass
-    if func == "2":
-        print("Input Training Data")
-        print(rawData.to_string(), "\n")
-    if func == "3":
-        print("Cleaned Training Data")
-        print(extractedData.to_string(), "\n")
-    if func == "4":
-        print("Cleaned Testing Data")
-        print(test.to_string(), "\n")
-    if func == "5":
-        os.system(clearCMD)
-        print("1) Original data")
-        print("2) Extracted data")
-        print("3) Test data")
-        func = input("Data to be analysed:")
-        if func == "1":
-            data = rawData
-        elif func == "2":
-            data = extractedData
-        else:
-            data = test
-        print()
-        while Plots(data):
-            pass
-    if func == "6":
-        FilteredTable()
-    if func == "7":
-        LogisticRegression()
-    if func == "8":
-        KNearestNeigbour()
-    if func == "9":
-        PrintPredictionResults()
+# userInput = 0
+# while Operations():
+#     os.system(clearCMD)
+#     if userInput == "1":
+#         pass
+#     if userInput == "2":
+#         print("Input Training Data")
+#         print(rawData.to_string(), "\n")
+#     if userInput == "3":
+#         print("Cleaned Training Data")
+#         print(extractedData.to_string(), "\n")
+#     if userInput == "4":
+#         print("Cleaned Testing Data")
+#         print(test.to_string(), "\n")
+#     if userInput == "5":
+#         os.system(clearCMD)
+#         print("1) Original data")
+#         print("2) Extracted data")
+#         print("3) Test data")
+#         userInput = input("Data to be analysed:")
+#         if userInput == "1":
+#             data = rawData
+#         elif userInput == "2":
+#             data = extractedData
+#         else:
+#             data = test
+#         print()
+#         while Plots(data):
+#             pass
+#     if userInput == "6":
+#         FilteredTable()
+#     if userInput == "7":
+#         LogisticRegression()
+#     if userInput == "8":
+#         KNearestNeigbour()
+#     if userInput == "9":
+#         PrintPredictionResults()
