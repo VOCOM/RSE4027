@@ -59,6 +59,24 @@ def EDAOperations():
 
     return userInput
 
+def MLOperations():
+    userInput = ''
+    operationList = [
+        "1) Clear Screen",
+        "2) Print extracted data table",
+        "3) Print extracted test table",
+        "4) Logistic Regression",
+        "5) K-Nearest Neighbour",
+        "6) Prediction Results",
+        "E) Exit Program"
+    ]
+
+    for operation in operationList:
+        print(operation)
+    userInput = input("Operation:").capitalize()
+
+    return userInput
+
 def Operations():
     global userInput
     operationList = [
@@ -304,12 +322,11 @@ def PredictionPlots(data):
     os.system(clearCMD)
     return plotType
 
-def LogisticRegression():
+def LogisticRegression(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData):
     # Logistic Regression
-    global lastAppliedModel
+    testedSurvivors = testedSurvivors.iloc[0:0]
+    testedNonSurvivors = testedNonSurvivors.iloc[0:0]
     lastAppliedModel = 'Logistic Regression'
-    global testedSurvivors
-    global testedNonSurvivors
     regr = linear_model.LogisticRegression(max_iter=1000)
     inputParameters = [
         'Passenger Fare',
@@ -322,39 +339,39 @@ def LogisticRegression():
         'C',
         'S'
     ]
-    X = extractedData[inputParameters].values
-    y = list(extractedData['Survived'])
+    X = extractedTrainData[inputParameters].values
+    y = list(extractedTrainData['Survived'])
     regr = regr.fit(X,y)
 
     predictions = []
 
     i = 0
-    while i < len(test):
-        inFare = test['Passenger Fare'][i]
-        inClass = test['Ticket Class'][i]
-        inAge = test['Age'][i]
-        inGender = test['Gender'][i]
-        inParent = test['NumParentChild'][i]
-        inSibling = test['NumSiblingSpouse'][i]
-        inQ = test['Q'][i]
-        inC = test['C'][i]
-        inS = test['S'][i]
+    while i < len(extractedTestData):
+        inFare = extractedTestData['Passenger Fare'][i]
+        inClass = extractedTestData['Ticket Class'][i]
+        inAge = extractedTestData['Age'][i]
+        inGender = extractedTestData['Gender'][i]
+        inParent = extractedTestData['NumParentChild'][i]
+        inSibling = extractedTestData['NumSiblingSpouse'][i]
+        inQ = extractedTestData['Q'][i]
+        inC = extractedTestData['C'][i]
+        inS = extractedTestData['S'][i]
         predictedSurvival = regr.predict([[inFare, inClass, inAge, inGender, inParent, inSibling, inQ, inC, inS]])
         predictions.append(predictedSurvival)
         if predictedSurvival:
-            testedSurvivors.loc[len(testedSurvivors.index)] = test.loc[i]
+            testedSurvivors.loc[len(testedSurvivors.index)] = extractedTestData.loc[i]
         else:
-            testedNonSurvivors.loc[len(testedNonSurvivors.index)] = test.loc[i]
+            testedNonSurvivors.loc[len(testedNonSurvivors.index)] = extractedTestData.loc[i]
         i += 1
 
-    actualVal = list(test['Survived'].values)
+    actualVal = list(extractedTestData['Survived'].values)
     predictions_rounded = np.round(predictions).astype(int)
     mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
 
     print("Logistic Regression Metrics")
-    precision = precision_score(list(test['Survived']), predictions)
-    recall = recall_score(list(test['Survived']), predictions)
-    fScore = f1_score(list(test['Survived']), predictions)
+    precision = precision_score(list(extractedTestData['Survived']), predictions)
+    recall = recall_score(list(extractedTestData['Survived']), predictions)
+    fScore = f1_score(list(extractedTestData['Survived']), predictions)
     print("Precision: {:.5f}".format(precision))
     print("Recall:    {:.5f}".format(recall))
     print("F1 Score:  {:.5f}".format(fScore))
@@ -362,6 +379,7 @@ def LogisticRegression():
     print("MSE:       {:.5f}".format(mse))
     print("RMSE:      {:.5f}".format(rmse))
     print()
+    return lastAppliedModel, testedSurvivors, testedNonSurvivors
 
 def FilteredTable():
     header = list(extractedData.keys())
@@ -373,11 +391,8 @@ def FilteredTable():
         os.system(clearCMD)
         print("Category not found\n")
 
-def KNearestNeigbour():
+def KNearestNeigbour(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData):
     # K Nearest Neighbor
-    global lastAppliedModel
-    global testedSurvivors
-    global testedNonSurvivors
     testedSurvivors = testedSurvivors.iloc[0:0]
     testedNonSurvivors = testedNonSurvivors.iloc[0:0]
     lastAppliedModel = 'K-Nearest Neighbour'
@@ -394,32 +409,30 @@ def KNearestNeigbour():
         'C',
         'S'
     ]
-    X = extractedData[inputParameters].values
-    y = list(extractedData['Survived'])
+    X = extractedTrainData[inputParameters].values
+    y = list(extractedTrainData['Survived'])
     
     knn_model = KNeighborsRegressor(n_neighbors = K)
     knn_model.fit(X, y)
     knn_model.feature_names_in_ = inputParameters
     
-    actualVal = list(test['Survived'].values)
-    predictions = knn_model.predict(test[inputParameters]) 
+    actualVal = list(extractedTestData['Survived'].values)
+    predictions = knn_model.predict(extractedTestData[inputParameters]) 
 
     predictions_rounded = np.round(predictions).astype(int)
 
     i = 0
     for prediction in predictions_rounded:
         if prediction:
-            testedSurvivors.loc[len(testedSurvivors)] = test.loc[i]
+            testedSurvivors.loc[len(testedSurvivors.index)] = extractedTestData.loc[i]
         else:
-            testedNonSurvivors.loc[len(testedNonSurvivors)] = test.loc[i]
+            testedNonSurvivors.loc[len(testedNonSurvivors.index)] = extractedTestData.loc[i]
         i += 1
 
     print("KNN Metrics")
     precision = precision_score(actualVal, predictions_rounded)
     recall = recall_score(actualVal, predictions_rounded)
     fScore = f1_score(actualVal, predictions_rounded)
-
-    # r2 = r2_score(actualVal, predictions_rounded)
     mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
 
     print("Precision: {:.5f}".format(precision))
@@ -430,11 +443,9 @@ def KNearestNeigbour():
     print("RMSE:      {:.5f}".format(rmse))
 
     print()
+    return lastAppliedModel, testedSurvivors, testedNonSurvivors
 
-def PrintPredictionResults():
-    global testedSurvivors
-    global testedNonSurvivors
-    global lastAppliedModel
+def PrintPredictionResults(lastAppliedModel, testedSurvivors, testedNonSurvivors):
     userInput = 0
     resultsOptions = [
         "1) Survivors",
