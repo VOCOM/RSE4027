@@ -12,7 +12,12 @@ pip install seaborn
 ```
 
 How To:
+For EDA:
 ```
-python3 setup.py
+python3 MS1EDA.py
+```
+For ML:
+```
+python3 MS1ML.py
 
 ```
