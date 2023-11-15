@@ -22,8 +22,9 @@ import os
 import pandas
 import numpy as np
 from sklearn import linear_model
-from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 from EDA import eda
@@ -324,8 +325,8 @@ def PredictionPlots(data):
 
 def LogisticRegression(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData):
     # Logistic Regression
-    testedSurvivors = testedSurvivors.iloc[0:0]
-    testedNonSurvivors = testedNonSurvivors.iloc[0:0]
+    testedSurvivors.drop(testedSurvivors.index, inplace=True)
+    testedNonSurvivors.drop(testedNonSurvivors.index, inplace=True)
     lastAppliedModel = 'Logistic Regression'
     regr = linear_model.LogisticRegression(max_iter=1000)
     inputParameters = [
@@ -368,6 +369,12 @@ def LogisticRegression(lastAppliedModel, testedSurvivors, testedNonSurvivors, ex
     predictions_rounded = np.round(predictions).astype(int)
     mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
 
+    label = ['Survived', 'Not Survived']
+    cm = confusion_matrix(actualVal, predictions_rounded)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label)
+    disp.plot()
+    plt.show()
+
     print("Logistic Regression Metrics")
     precision = precision_score(list(extractedTestData['Survived']), predictions)
     recall = recall_score(list(extractedTestData['Survived']), predictions)
@@ -393,8 +400,8 @@ def FilteredTable():
 
 def KNearestNeigbour(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData):
     # K Nearest Neighbor
-    testedSurvivors = testedSurvivors.iloc[0:0]
-    testedNonSurvivors = testedNonSurvivors.iloc[0:0]
+    testedSurvivors.drop(testedSurvivors.index, inplace=True)
+    testedNonSurvivors.drop(testedNonSurvivors.index, inplace=True)
     lastAppliedModel = 'K-Nearest Neighbour'
     K = 200
 
@@ -417,9 +424,14 @@ def KNearestNeigbour(lastAppliedModel, testedSurvivors, testedNonSurvivors, extr
     knn_model.feature_names_in_ = inputParameters
     
     actualVal = list(extractedTestData['Survived'].values)
-    predictions = knn_model.predict(extractedTestData[inputParameters]) 
-
+    predictions = knn_model.predict(extractedTestData[inputParameters])
     predictions_rounded = np.round(predictions).astype(int)
+    
+    label = ['Survived', 'Not Survived']
+    cm = confusion_matrix(actualVal, predictions_rounded)
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label)
+    disp.plot()
+    plt.show()
 
     i = 0
     for prediction in predictions_rounded:
