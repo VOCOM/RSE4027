@@ -182,7 +182,8 @@ for x in data.index:
 # EDA visualization start
 def VisualizeEda(visualizeInput):
     category = "None"
-    corrDataList = ["Passenger Fare", "Ticket Class", "Age", "Gender", "NumSiblingSpouse", "NumParentChild"]
+    isNaDataList = ["Passenger Fare", "Ticket Class", "Ticket Number", "Cabin", "Embarkation Country", "Age", "Gender", "NumSiblingSpouse", "NumParentChild", "Survived"]
+    corrDataList = ["Passenger Fare", "Ticket Class", "Age", "Gender", "NumSiblingSpouse", "NumParentChild", "Survived"]
     categorizedDataList = ["Ticket Class", "Embarkation Country", "Gender", "NumSiblingSpouse", "NumParentChild"]
     if visualizeInput == "1":
         binCategory = "Passenger Fare"
@@ -223,9 +224,9 @@ def VisualizeEda(visualizeInput):
         plt.set_ylabel('Survival Probability')
         matplotlib.pyplot.show()
     if visualizeInput == "8":
-        for corrData in corrDataList:
-            validDataPercentage = data[corrData].isnull().sum() / len(data.index)
-            print("Percentage of NaN in", corrData, ":", validDataPercentage*100,"%")
+        for isNaData in isNaDataList:
+            validDataPercentage = data[isNaData].isnull().sum() / len(data.index)
+            print("Percentage of NaN in", isNaData, ":", validDataPercentage*100,"%")
     if visualizeInput == "9":
         corr_matrix = data[corrDataList].corr()
         matplotlib.pyplot.figure(figsize=(9, 8))
