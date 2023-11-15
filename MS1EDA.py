@@ -45,9 +45,10 @@ while userInput != "E":
             "2) Embarkation Country vs Survived",
             "3) Gender Class vs Survived",
             "4) NumSiblingSpouse vs Survived",
-            "5) NumParentChild vs Survived",
-            "6) Percentage of NaN in data column",
-            "7) Correlation of all numerical data columns"
+            "5) NumParentChild vs Survived", 
+            "6) Correlation of all numerical data columns",
+            "7) Percentage of NaN in data column"
+            
         ]
         for visualize in visualizeList:
             print(visualize)
