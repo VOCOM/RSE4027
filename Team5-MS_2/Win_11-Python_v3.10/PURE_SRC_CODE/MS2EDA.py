@@ -5,7 +5,7 @@
 
 import os
 from setup import Setup, EDAOperations, Plots, VisualizeEda
-from eda import Clean
+from eda import Clean, DropAbnormalities
 
 clearCMD = 'cls'
 rawTrainData, rawTestData, config = Setup()

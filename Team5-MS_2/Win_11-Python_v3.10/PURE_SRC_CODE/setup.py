@@ -12,17 +12,18 @@
 # OS Import
 import os
 
+# Dataframe Import
 import pandas
-import numpy as np
-import sklearn.metrics
-from sklearn import linear_model
-from sklearn.neighbors import KNeighborsRegressor
+
+# Graphing Imports
 import matplotlib.pyplot as plt
-import matplotlib.pyplot
 import seaborn as sns
 
 # Local Import
 import eda
+
+# Math Import
+import numpy
 
 # CLI Clear Macro
 clearCMD = "cls"
@@ -31,6 +32,7 @@ def Setup():
     configFile = open('../SCRIPTS_CFG/config.txt')
     isUnified = False
     splitRatio = 0
+    maxIterations = 0
     for line in configFile.readlines():
         if "Unified dataset" in line:
             isUnified = bool(line.strip().split("\"")[1])
@@ -42,6 +44,8 @@ def Setup():
             trainingDataPath = line.strip().split("\"")[1].replace("\\","/")
         if "Testing dataset: " in line:
             testDataPath = line.strip().split("\"")[1].replace("\\","/")
+        if "Max Iteration: " in line:
+            maxIterations = int(line.strip().split("\"")[1])
 
     trainData = pandas.read_csv(trainingDataPath)
     if isUnified:
@@ -62,7 +66,11 @@ def Setup():
     else:
         testData = pandas.read_csv(testDataPath)
     
-    config = [isUnified, splitRatio]
+    config = {
+        'Unified' : isUnified,
+        'Split Ratio' : splitRatio,
+        'Max Iteration' : maxIterations
+    }
 
     return trainData, testData, config
 
@@ -197,7 +205,7 @@ def Plots(data):
             else:
                 ticketSurvival['Not Survived'][data.loc[x,'Ticket Class']-1] += 1
             x+=1
-        bottom = np.zeros(3)
+        bottom = numpy.zeros(3)
         for boolean, count in ticketSurvival.items():
             ax.bar(label, count, label=boolean, bottom=bottom)
             bottom+=count
@@ -224,7 +232,7 @@ def Plots(data):
                 if data.loc[x,'S']:
                     countrySurvival['Not Survived'][2]+=1
             x+=1
-        bottom = np.zeros(3)
+        bottom = numpy.zeros(3)
         for boolean, count in countrySurvival.items():
             ax.bar(label, count, label=boolean, bottom=bottom)
             bottom+=count
@@ -246,7 +254,7 @@ def Plots(data):
             else:
                 genderSurvival['Not Survival'][data.loc[x,'Gender']]+=1
             x+=1
-        bottom = np.zeros(2)
+        bottom = numpy.zeros(2)
         for boolean, count in genderSurvival.items():
             ax.bar(label, count, label=boolean, bottom=bottom)
             bottom+=count
@@ -257,8 +265,8 @@ def Plots(data):
                 maxVal = val
         label = list(data["NumParentChild"].unique())
         VertDependantSurvival = {
-            'Survived' : np.zeros(maxVal+1, dtype=int),
-            'Not Survived' : np.zeros(maxVal+1, dtype=int)
+            'Survived' : numpy.zeros(maxVal+1, dtype=int),
+            'Not Survived' : numpy.zeros(maxVal+1, dtype=int)
         }
         while x < len(data):
             if data.loc[x,'Survived']:
@@ -266,7 +274,7 @@ def Plots(data):
             else:
                 VertDependantSurvival['Not Survived'][data.loc[x,'NumParentChild']]+=1
             x+=1
-        bottom = np.zeros(maxVal+1)
+        bottom = numpy.zeros(maxVal+1)
         for boolean, count in VertDependantSurvival.items():
             ax.bar(label, count, label=boolean, bottom=bottom)
             bottom+=count
@@ -277,8 +285,8 @@ def Plots(data):
                 maxVal = val
         label = list(data["NumSiblingSpouse"].unique())
         VertDependantSurvival = {
-            'Survived' : np.zeros(maxVal+1, dtype=int),
-            'Not Survived' : np.zeros(maxVal+1, dtype=int)
+            'Survived' : numpy.zeros(maxVal+1, dtype=int),
+            'Not Survived' : numpy.zeros(maxVal+1, dtype=int)
         }
         while x < len(data):
             if data.loc[x,'Survived']:
@@ -286,7 +294,7 @@ def Plots(data):
             else:
                 VertDependantSurvival['Not Survived'][data.loc[x,'NumSiblingSpouse']]+=1
             x+=1
-        bottom = np.zeros(maxVal+1)
+        bottom = numpy.zeros(maxVal+1)
         for boolean, count in VertDependantSurvival.items():
             ax.bar(label, count, label=boolean, bottom=bottom)
             bottom+=count
@@ -348,84 +356,6 @@ def PredictionPlots(data):
     os.system(clearCMD)
     return plotType
 
-def LogisticRegression(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData, test=False):
-    # Logistic Regression
-    testedSurvivors.drop(testedSurvivors.index, inplace=True)
-    testedNonSurvivors.drop(testedNonSurvivors.index, inplace=True)
-    lastAppliedModel = 'Logistic Regression'
-    regr = linear_model.LogisticRegression(max_iter=1000)
-    inputParameters = [
-        'Passenger Fare',
-        'Ticket Class',
-        'Age',
-        'Gender',
-        # 'NumParentChild',
-        'NumSiblingSpouse',
-        'Q',
-        'C',
-        'S'
-    ]
-    X = extractedTrainData[inputParameters].values
-    y = list(extractedTrainData['Survived'])
-    regr = regr.fit(X,y)
-
-    predictions = []
-
-    i = 0
-    while i < len(extractedTestData):
-        inFare = extractedTestData['Passenger Fare'][i]
-        inClass = extractedTestData['Ticket Class'][i]
-        inAge = extractedTestData['Age'][i]
-        inGender = extractedTestData['Gender'][i]
-        # inParent = extractedTestData['NumParentChild'][i]
-        inSibling = extractedTestData['NumSiblingSpouse'][i]
-        inQ = extractedTestData['Q'][i]
-        inC = extractedTestData['C'][i]
-        inS = extractedTestData['S'][i]
-        predictedSurvival = regr.predict([[inFare, inClass, inAge, inGender, inSibling, inQ, inC, inS]])
-        predictions.append(predictedSurvival)
-        if predictedSurvival:
-            testedSurvivors.loc[len(testedSurvivors.index)] = extractedTestData.loc[i]
-        else:
-            testedNonSurvivors.loc[len(testedNonSurvivors.index)] = extractedTestData.loc[i]
-        i += 1
-    
-    predictions_rounded = np.round(predictions).astype(int)
-    
-    if not test:
-        actualVal = list(extractedTestData['Survived'].values)
-        mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
-        mcc = matthews_corrcoef(list(extractedTestData['Survived']), predictions)
-        AUC = roc_auc_score(list(extractedTestData['Survived']), predictions)
-        label = ['Survived', 'Not Survived']
-        cm = confusion_matrix(actualVal, predictions_rounded)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label)
-        disp.plot()
-        plt.show()
-
-        print("Logistic Regression Metrics")
-        accuracy = accuracy_score(list(extractedTestData['Survived']), predictions)
-        precision = precision_score(list(extractedTestData['Survived']), predictions)
-        recall = recall_score(list(extractedTestData['Survived']), predictions)
-        fScore = f1_score(list(extractedTestData['Survived']), predictions)
-        print("Accuracy:  {:.5f}".format(accuracy))
-        print("Precision: {:.5f}".format(precision))
-        print("Recall:    {:.5f}".format(recall))
-        print("F1 Score:  {:.5f}".format(fScore))
-        print("AUC:       {:.5f}".format(AUC))
-        print("MCC:       {:.5f}".format(mcc))
-        print("MAE:       {:.5f}".format(mae))
-        print("MSE:       {:.5f}".format(mse))
-        print("RMSE:      {:.5f}".format(rmse))
-        print()
-
-    testedSurvivors.insert(len(testedSurvivors.columns),"To Insure", "Yes")
-    testedNonSurvivors.insert(len(testedNonSurvivors.columns),"To Insure", "No")
-    tmpData = pandas.concat([testedSurvivors,testedNonSurvivors])
-    tmpData.to_csv("Outcome.csv")
-
-    return lastAppliedModel, testedSurvivors, testedNonSurvivors
-
 def FilteredTable():
     header = list(extractedData.keys())
     print(header)
@@ -435,73 +365,6 @@ def FilteredTable():
     else:
         os.system(clearCMD)
         print("Category not found\n")
-
-def KNearestNeigbour(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData, test=False):
-    # K Nearest Neighbor
-    testedSurvivors.drop(testedSurvivors.index, inplace=True)
-    testedNonSurvivors.drop(testedNonSurvivors.index, inplace=True)
-    lastAppliedModel = 'K-Nearest Neighbour'
-    K = 200
-
-    inputParameters = [
-        'Passenger Fare',
-        'Ticket Class',
-        'Age',
-        'Gender',
-        # 'NumParentChild',
-        'NumSiblingSpouse',
-        'Q',
-        'C',
-        'S'
-    ]
-    X = extractedTrainData[inputParameters].values
-    y = list(extractedTrainData['Survived'])
-    
-    knn_model = KNeighborsRegressor(n_neighbors = K)
-    knn_model.fit(X, y)
-    knn_model.feature_names_in_ = inputParameters
-    
-    predictions = knn_model.predict(extractedTestData[inputParameters])
-    predictions_rounded = np.round(predictions).astype(int)
-    
-    i = 0
-    for prediction in predictions_rounded:
-        if prediction:
-            testedSurvivors.loc[len(testedSurvivors.index)] = extractedTestData.loc[i]
-        else:
-            testedNonSurvivors.loc[len(testedNonSurvivors.index)] = extractedTestData.loc[i]
-        i += 1
-
-    if not test:
-        actualVal = list(extractedTestData['Survived'].values)
-        label = ['Survived', 'Not Survived']
-        cm = confusion_matrix(actualVal, predictions_rounded)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label)
-        disp.plot()
-        plt.show()
-
-        print("KNN Metrics")
-        accuracy = accuracy_score(list(extractedTestData['Survived']), predictions)
-        precision = precision_score(actualVal, predictions_rounded)
-        recall = recall_score(actualVal, predictions_rounded)
-        fScore = f1_score(actualVal, predictions_rounded)
-        mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
-        mcc = matthews_corrcoef(actualVal, predictions_rounded)
-        AUC = roc_auc_score(list(extractedTestData['Survived']), predictions)
-
-        print("Accuracy:  {:.5f}".format(accuracy))
-        print("Precision: {:.5f}".format(precision))
-        print("Recall:    {:.5f}".format(recall))
-        print("F1 Score:  {:.5f}".format(fScore))
-        print("AUC:       {:.5f}".format(AUC))
-        print("MCC:       {:.5f}".format(mcc))
-        print("MAE:       {:.5f}".format(mae))
-        print("MSE:       {:.5f}".format(mse))
-        print("RMSE:      {:.5f}".format(rmse))
-
-        print()
-
-    return lastAppliedModel, testedSurvivors, testedNonSurvivors
 
 def PrintPredictionResults(lastAppliedModel, testedSurvivors, testedNonSurvivors):
     userInput = 0

@@ -5,9 +5,9 @@
 ##
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+from utility import Str2NaN
+import numpy
 import pandas
-import numpy as np
-import math
 
 def Find(data, category):
     distributionTable = {}
@@ -17,26 +17,6 @@ def Find(data, category):
         else:
             distributionTable[entry] = 1
     return distributionTable
-
-def Info(data):
-    for header in data.dict.keys():
-        print(header, len(data.dict.get(header)), "entries")
-    print()
-        
-    for header in data.dict.keys():
-        print(header)
-        distributionTable = Find(data, header)
-        PrintDistribution(distributionTable)
-
-def PrintDistribution(distributionTable):
-        for distribution in distributionTable.items():
-            print(distribution)
-        print()
-
-def str2NaN(value):
-    if value == "0":
-        value = np.nan
-    return value
 
 def Clean(data):
     # Rename Columns
@@ -110,7 +90,7 @@ def Clean(data):
     data.drop('Unnamed: 18', axis='columns', inplace=True)
     return data
 
-def Extract(data):
+def DropAbnormalities(data):
     normalData = pandas.DataFrame(columns=data.columns)
     i = 0
     while i < len(data):
@@ -123,6 +103,6 @@ def Extract(data):
 def ErrorCalc(predicted, actual):
     mae = mean_absolute_error(predicted, actual)
     mse = mean_squared_error(predicted, actual)
-    rmse = np.sqrt(mse)
+    rmse = numpy.sqrt(mse)
 
     return mae, mse, rmse

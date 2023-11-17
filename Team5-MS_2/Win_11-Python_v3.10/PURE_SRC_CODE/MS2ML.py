@@ -1,36 +1,38 @@
 import os
 import pandas
-from setup import Setup, MLOperations, LogisticRegression, KNearestNeigbour, PrintPredictionResults
-from eda import Clean, Extract
+from setup import Setup, MLOperations
+from ml import LogisticRegression, KNearestNeigbour
+from eda import Clean
 
 clearCMD = 'cls'
 lastAppliedModel = ''
-test = True
 
-rawTrainData, rawTestData = Setup()
+rawTrainData, rawTestData, config = Setup()
 
-rawTrainData = Clean(rawTrainData)
-rawTestData = Clean(rawTestData, test=test)
+cleanTrainData = Clean(rawTrainData.copy())
+cleanTestData = Clean(rawTestData.copy())
 
-extractedTrainData = Extract(rawTrainData)
-extractedTestData = Extract(rawTestData)
+predictionData = pandas.DataFrame(columns=cleanTestData.columns)
 
-testedSurvivors = pandas.DataFrame(columns=extractedTestData.columns)
-testedNonSurvivors = pandas.DataFrame(columns=extractedTestData.columns)
+parameters = {
+    'Input Parameters' : ['Age', 'H', 'W'],
+    'Prediction Element' : 'Obesity_Level'
+}
 
 userInput = MLOperations()
 while userInput != "E":
     os.system(clearCMD)
     if userInput == "2":
         print("Input Training Data")
-        print(extractedTrainData.to_string(), "\n")
+        print(cleanTrainData.to_string(), "\n")
     if userInput == "3":
         print("Input Test Data")
-        print(extractedTestData.to_string(), "\n")
+        print(cleanTestData.to_string(), "\n")
     if userInput == "4":
-        lastAppliedModel, testedSurvivors, testedNonSurvivors = LogisticRegression(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData, test=test)
+        lastAppliedModel = LogisticRegression(predictionData, cleanTrainData, cleanTestData, parameters, config)
     if userInput == "5":
-        lastAppliedModel, testedSurvivors, testedNonSurvivors = KNearestNeigbour(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData, test=test)
+        lastAppliedModel = KNearestNeigbour(predictionData, cleanTrainData, cleanTestData, parameters, config)
     if userInput == "6":
-        PrintPredictionResults(lastAppliedModel, testedSurvivors, testedNonSurvivors)
+        # PrintPredictionResults(lastAppliedModel, testedSurvivors, testedNonSurvivors)
+        pass
     userInput = MLOperations()
