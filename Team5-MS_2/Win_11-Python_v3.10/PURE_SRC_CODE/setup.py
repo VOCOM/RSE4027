@@ -1,52 +1,65 @@
 ## 
 # @author Muhammad Syamim Bin Shamsulbani
 # @brief Machine learning & Artificial Intelligence Program for RSE4207
-# @version 0.5
-# @date 16/10/23
+# @version 1.0
+# @date 16/11/23
 #
 # Changelog:
-# - 16/10/23:
-#   Find userInputtion added.
-#   User Interface added.
-# - 07/11/23:
-#   Clean data added.
-#   One-hot encoding added.
-# - 08/11/23:
-#   Added MAE, MSE, RMSE calculation in Logistic Regression
-# - 10/11/23:
-#   EDA Visualization testing added.
-# - 12/11/23:
-#   Added Survival distributions in the distribution plots
-# - 12/11/23:
-#   Added KNearest
 ##
 
-from audioop import rms
+# OS Import
 import os
 
 import pandas
 import numpy as np
+import sklearn.metrics
 from sklearn import linear_model
-from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, ConfusionMatrixDisplay
 from sklearn.neighbors import KNeighborsRegressor
-from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import matplotlib.pyplot
 import seaborn as sns
 
-from EDA import eda
+# Local Import
+import eda
 
+# CLI Clear Macro
 clearCMD = "cls"
 
 def Setup():
-    config = open('config.txt')
+    config = open('../SCRIPTS_CFG/config.txt')
+    isUnified = False
+    splitRatio = 0
     for line in config.readlines():
-        if "Milestone1_train_csv: " in line:
+        if "Unified dataset" in line:
+            isUnified = bool(line.strip().split("\"")[1])
+        if "SplitRatio (Train/Test): " in line:
+            if isUnified:
+                line = line.strip().split("\"")[1].split("/")
+                splitRatio = float(line[0]) /100
+        if "Training dataset: " in line:
             trainingDataPath = line.strip().split("\"")[1].replace("\\","/")
-        if "Milestone1_test_csv: " in line:
+        if "Testing dataset: " in line:
             testDataPath = line.strip().split("\"")[1].replace("\\","/")
+
     trainData = pandas.read_csv(trainingDataPath)
-    testData = pandas.read_csv(testDataPath)
+    if isUnified:
+        testData = trainData.copy()
+        maxIndex = len(trainData)
+        splitIndex = int(maxIndex * splitRatio)
+        i = 0
+        while i < splitIndex:
+            testData.drop(axis='index', labels=i, inplace=True)
+            i += 1
+        while i < maxIndex:
+            trainData.drop(axis='index', labels=i, inplace=True)
+            i += 1
+        testData.reset_index(inplace=True)
+        trainData.reset_index(inplace=True)
+        testData.drop(axis='columns', labels='index', inplace=True)
+        trainData.drop(axis='columns', labels='index', inplace=True)
+    else:
+        testData = pandas.read_csv(testDataPath)
+    
     return trainData, testData
 
 def EDAOperations():
@@ -54,9 +67,9 @@ def EDAOperations():
     operationList = [
         "1) Clear Screen",
         "2) Print original data table",
-        "3) Print extracted data table",
+        "3) Print cleaned data table",
         "4) Print original test table",
-        "5) Print extracted test table",
+        "5) Print cleaned test table",
         "6) Data Distributions",
         "7) EDA Visualization",
         "E) Exit Program"
@@ -331,7 +344,7 @@ def PredictionPlots(data):
     os.system(clearCMD)
     return plotType
 
-def LogisticRegression(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData):
+def LogisticRegression(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData, test=False):
     # Logistic Regression
     testedSurvivors.drop(testedSurvivors.index, inplace=True)
     testedNonSurvivors.drop(testedNonSurvivors.index, inplace=True)
@@ -342,7 +355,7 @@ def LogisticRegression(lastAppliedModel, testedSurvivors, testedNonSurvivors, ex
         'Ticket Class',
         'Age',
         'Gender',
-        'NumParentChild',
+        # 'NumParentChild',
         'NumSiblingSpouse',
         'Q',
         'C',
@@ -353,7 +366,6 @@ def LogisticRegression(lastAppliedModel, testedSurvivors, testedNonSurvivors, ex
     regr = regr.fit(X,y)
 
     predictions = []
-    actualVal = test['Survived'].values
 
     i = 0
     while i < len(extractedTestData):
@@ -361,89 +373,54 @@ def LogisticRegression(lastAppliedModel, testedSurvivors, testedNonSurvivors, ex
         inClass = extractedTestData['Ticket Class'][i]
         inAge = extractedTestData['Age'][i]
         inGender = extractedTestData['Gender'][i]
-        inParent = extractedTestData['NumParentChild'][i]
+        # inParent = extractedTestData['NumParentChild'][i]
         inSibling = extractedTestData['NumSiblingSpouse'][i]
         inQ = extractedTestData['Q'][i]
         inC = extractedTestData['C'][i]
         inS = extractedTestData['S'][i]
-        predictedSurvival = regr.predict([[inFare, inClass, inAge, inGender, inParent, inSibling, inQ, inC, inS]])
+        predictedSurvival = regr.predict([[inFare, inClass, inAge, inGender, inSibling, inQ, inC, inS]])
         predictions.append(predictedSurvival)
         if predictedSurvival:
             testedSurvivors.loc[len(testedSurvivors.index)] = extractedTestData.loc[i]
         else:
             testedNonSurvivors.loc[len(testedNonSurvivors.index)] = extractedTestData.loc[i]
         i += 1
-
-    actualVal = list(extractedTestData['Survived'].values)
+    
     predictions_rounded = np.round(predictions).astype(int)
-    mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
+    
+    if not test:
+        actualVal = list(extractedTestData['Survived'].values)
+        mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
+        mcc = matthews_corrcoef(list(extractedTestData['Survived']), predictions)
+        AUC = roc_auc_score(list(extractedTestData['Survived']), predictions)
+        label = ['Survived', 'Not Survived']
+        cm = confusion_matrix(actualVal, predictions_rounded)
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label)
+        disp.plot()
+        plt.show()
 
-    label = ['Survived', 'Not Survived']
-    cm = confusion_matrix(actualVal, predictions_rounded)
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label)
-    disp.plot()
-    plt.show()
+        print("Logistic Regression Metrics")
+        accuracy = accuracy_score(list(extractedTestData['Survived']), predictions)
+        precision = precision_score(list(extractedTestData['Survived']), predictions)
+        recall = recall_score(list(extractedTestData['Survived']), predictions)
+        fScore = f1_score(list(extractedTestData['Survived']), predictions)
+        print("Accuracy:  {:.5f}".format(accuracy))
+        print("Precision: {:.5f}".format(precision))
+        print("Recall:    {:.5f}".format(recall))
+        print("F1 Score:  {:.5f}".format(fScore))
+        print("AUC:       {:.5f}".format(AUC))
+        print("MCC:       {:.5f}".format(mcc))
+        print("MAE:       {:.5f}".format(mae))
+        print("MSE:       {:.5f}".format(mse))
+        print("RMSE:      {:.5f}".format(rmse))
+        print()
 
-    print("Logistic Regression Metrics")
-    precision = precision_score(list(extractedTestData['Survived']), predictions)
-    recall = recall_score(list(extractedTestData['Survived']), predictions)
-    fScore = f1_score(list(extractedTestData['Survived']), predictions)
-    print("Precision: {:.5f}".format(precision))
-    print("Recall:    {:.5f}".format(recall))
-    print("F1 Score:  {:.5f}".format(fScore))
-    print("MAE:       {:.5f}".format(mae))
-    print("MSE:       {:.5f}".format(mse))
-    print("RMSE:      {:.5f}".format(rmse))
-    print()
+    testedSurvivors.insert(len(testedSurvivors.columns),"To Insure", "Yes")
+    testedNonSurvivors.insert(len(testedNonSurvivors.columns),"To Insure", "No")
+    tmpData = pandas.concat([testedSurvivors,testedNonSurvivors])
+    tmpData.to_csv("Outcome.csv")
+
     return lastAppliedModel, testedSurvivors, testedNonSurvivors
-
-
-
-def KNearest():
-    # K Nearest Neighbor
-    K = 200
-
-    inputParameters = [
-        'Passenger Fare',
-        'Ticket Class',
-        'Age',
-        'Gender',
-        'NumParentChild',
-        'NumSiblingSpouse',
-        'Q',
-        'C',
-        'S'
-    ]
-    X = extractedData[inputParameters].values
-    y = list(extractedData['Survived'])
-    
-    knn_model = KNeighborsRegressor(n_neighbors = K)
-    knn_model.fit(X, y)
-    knn_model.feature_names_in_ = inputParameters
-    
-    actualVal = list(test['Survived'].values)
-    predictions = knn_model.predict(test[inputParameters]) 
-
-    predictions_rounded = np.round(predictions).astype(int)
-
-    print("KNN Metrics")
-    precision = precision_score(actualVal, predictions_rounded)
-    recall = recall_score(actualVal, predictions_rounded)
-    fScore = f1_score(actualVal, predictions_rounded)
-
-    r2 = r2_score(actualVal, predictions_rounded)
-    mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
-
-    print("Precision: {:.5f}".format(precision))
-    print("Recall:    {:.5f}".format(recall))
-    print("F1 Score:  {:.5f}".format(fScore))
-    print("MAE: {:.5f}".format(mae))
-    print("MSE:    {:.5f}".format(mse))
-    print("RMSE:  {:.5f}".format(rmse))
-
-    print()
-
-
 
 def FilteredTable():
     header = list(extractedData.keys())
@@ -455,7 +432,7 @@ def FilteredTable():
         os.system(clearCMD)
         print("Category not found\n")
 
-def KNearestNeigbour(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData):
+def KNearestNeigbour(lastAppliedModel, testedSurvivors, testedNonSurvivors, extractedTrainData, extractedTestData, test=False):
     # K Nearest Neighbor
     testedSurvivors.drop(testedSurvivors.index, inplace=True)
     testedNonSurvivors.drop(testedNonSurvivors.index, inplace=True)
@@ -467,7 +444,7 @@ def KNearestNeigbour(lastAppliedModel, testedSurvivors, testedNonSurvivors, extr
         'Ticket Class',
         'Age',
         'Gender',
-        'NumParentChild',
+        # 'NumParentChild',
         'NumSiblingSpouse',
         'Q',
         'C',
@@ -480,16 +457,9 @@ def KNearestNeigbour(lastAppliedModel, testedSurvivors, testedNonSurvivors, extr
     knn_model.fit(X, y)
     knn_model.feature_names_in_ = inputParameters
     
-    actualVal = list(extractedTestData['Survived'].values)
     predictions = knn_model.predict(extractedTestData[inputParameters])
     predictions_rounded = np.round(predictions).astype(int)
     
-    label = ['Survived', 'Not Survived']
-    cm = confusion_matrix(actualVal, predictions_rounded)
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label)
-    disp.plot()
-    plt.show()
-
     i = 0
     for prediction in predictions_rounded:
         if prediction:
@@ -498,20 +468,35 @@ def KNearestNeigbour(lastAppliedModel, testedSurvivors, testedNonSurvivors, extr
             testedNonSurvivors.loc[len(testedNonSurvivors.index)] = extractedTestData.loc[i]
         i += 1
 
-    print("KNN Metrics")
-    precision = precision_score(actualVal, predictions_rounded)
-    recall = recall_score(actualVal, predictions_rounded)
-    fScore = f1_score(actualVal, predictions_rounded)
-    mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
+    if not test:
+        actualVal = list(extractedTestData['Survived'].values)
+        label = ['Survived', 'Not Survived']
+        cm = confusion_matrix(actualVal, predictions_rounded)
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label)
+        disp.plot()
+        plt.show()
 
-    print("Precision: {:.5f}".format(precision))
-    print("Recall:    {:.5f}".format(recall))
-    print("F1 Score:  {:.5f}".format(fScore))
-    print("MAE:       {:.5f}".format(mae))
-    print("MSE:       {:.5f}".format(mse))
-    print("RMSE:      {:.5f}".format(rmse))
+        print("KNN Metrics")
+        accuracy = accuracy_score(list(extractedTestData['Survived']), predictions)
+        precision = precision_score(actualVal, predictions_rounded)
+        recall = recall_score(actualVal, predictions_rounded)
+        fScore = f1_score(actualVal, predictions_rounded)
+        mae, mse, rmse = eda.ErrorCalc(predictions_rounded, actualVal)
+        mcc = matthews_corrcoef(actualVal, predictions_rounded)
+        AUC = roc_auc_score(list(extractedTestData['Survived']), predictions)
 
-    print()
+        print("Accuracy:  {:.5f}".format(accuracy))
+        print("Precision: {:.5f}".format(precision))
+        print("Recall:    {:.5f}".format(recall))
+        print("F1 Score:  {:.5f}".format(fScore))
+        print("AUC:       {:.5f}".format(AUC))
+        print("MCC:       {:.5f}".format(mcc))
+        print("MAE:       {:.5f}".format(mae))
+        print("MSE:       {:.5f}".format(mse))
+        print("RMSE:      {:.5f}".format(rmse))
+
+        print()
+
     return lastAppliedModel, testedSurvivors, testedNonSurvivors
 
 def PrintPredictionResults(lastAppliedModel, testedSurvivors, testedNonSurvivors):
@@ -543,26 +528,6 @@ def PrintPredictionResults(lastAppliedModel, testedSurvivors, testedNonSurvivors
                 userInput = PredictionPlots(testedNonSurvivors)
             userInput = ''
         os.system(clearCMD)
-        print("1) Original data")
-        print("2) Extracted data")
-        print("3) Test data")
-        func = input("Data to be analysed:")
-        if func == "1":
-            data = rawData
-        elif func == "2":
-            data = extractedData
-        else:
-            data = test
-        print()
-        while Plots(data):
-            pass
-    if func == "6":
-        FilteredTable()
-    if func == "7":
-        LogisticRegression()
-
-    if func == "8":
-        KNearest()
 
 def VisualizeEda(data, visualizeInput):
     category = "None"
@@ -621,6 +586,7 @@ def VisualizeEda(data, visualizeInput):
         input("Press Enter key to continue...")
     os.system(clearCMD)
     # return False
+
 # dataPath = ""
 # Menu()
 # rawData, rawTest = Setup()

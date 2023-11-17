@@ -4,7 +4,6 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 import pandas
 import numpy as np
 import math
-import re
 
 def Find(data, category):
     distributionTable = {}
@@ -130,7 +129,6 @@ def Extract(data):
         i += 1
     normalData.drop('Abnormal', axis='columns', inplace=True)
     return normalData
-
 
 def ErrorCalc(predicted, actual):
     mae = mean_absolute_error(predicted, actual)
