@@ -19,22 +19,20 @@ import pandas
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Local Import
-import eda
-
 # Math Import
 import numpy
 
-# CLI Clear Macro
-clearCMD = "cls"
-
 def Setup():
     configFile = open('../SCRIPTS_CFG/config.txt')
+    clearCMD = ''
     isUnified = False
     splitRatio = 0
     maxIterations = 0
+    kMeans = 0
     for line in configFile.readlines():
-        if "Unified dataset" in line:
+        if "Clear Command: " in line:
+            clearCMD = line.strip().split("\"")[1]
+        if "Unified dataset: " in line:
             isUnified = bool(line.strip().split("\"")[1])
         if "SplitRatio (Train/Test): " in line:
             if isUnified:
@@ -46,6 +44,8 @@ def Setup():
             testDataPath = line.strip().split("\"")[1].replace("\\","/")
         if "Max Iteration: " in line:
             maxIterations = int(line.strip().split("\"")[1])
+        if "K-Means: " in line:
+            kMeans = int(line.strip().split("\"")[1])
 
     trainData = pandas.read_csv(trainingDataPath)
     if isUnified:
@@ -67,9 +67,11 @@ def Setup():
         testData = pandas.read_csv(testDataPath)
     
     config = {
+        'Clear Command' : clearCMD,
         'Unified' : isUnified,
         'Split Ratio' : splitRatio,
-        'Max Iteration' : maxIterations
+        'Max Iteration' : maxIterations,
+        'K-Means' : kMeans
     }
 
     return trainData, testData, config
@@ -310,52 +312,6 @@ def Plots(data):
     os.system(clearCMD)
     return True
 
-def PredictionPlots(data):
-    x = 0
-    maxVal = 0
-    label = []
-    plotList = [
-        '1) Fare distribution',
-        '2) Ticket distribution',
-        '3) Country distribution',
-        '4) Age distribution',
-        '5) Gender distribution',
-        '6) Vertical Dependents distribution',
-        '7) Horizontal Dependents distribution',
-        'E) Return to menu'
-    ]
-    for plotOption in plotList:
-        print(plotOption)
-    plotType = input("Plot Type:").capitalize()
-    fig, ax = plt.subplots()
-    if plotType == "1":
-        pass
-    if plotType == "2":
-        label = list(data["Ticket Class"].unique())
-        count = list(data["Ticket Class"].value_counts())
-        ax.bar(label, count)
-        plt.xlabel("Ticket Class")
-    if plotType == "3":
-        pass
-    if plotType == "4":
-        pass
-    if plotType == "5":
-        pass
-    if plotType == "6":
-        pass
-    if plotType == "7":
-        pass
-    if plotType == "8":
-        pass
-    if plotType == "E" or plotType == "":
-        plt.close()
-        return plotType
-    plt.ylabel('Number of Passengers')
-    plt.show()
-    plt.close()
-    os.system(clearCMD)
-    return plotType
-
 def FilteredTable():
     header = list(extractedData.keys())
     print(header)
@@ -365,36 +321,6 @@ def FilteredTable():
     else:
         os.system(clearCMD)
         print("Category not found\n")
-
-def PrintPredictionResults(lastAppliedModel, testedSurvivors, testedNonSurvivors):
-    userInput = 0
-    resultsOptions = [
-        "1) Survivors",
-        "2) Non Survivors",
-        "E) Exit"
-    ]
-    os.system(clearCMD)
-    if len(testedSurvivors) == 0 or len(testedNonSurvivors) == 0:
-        print("No data detected! Apply a model first.")
-        return
-    while userInput != "E":
-        print("Model Used:", lastAppliedModel)
-        for options in resultsOptions:
-            print(options)
-        userInput = input("Predictions to list:").capitalize()
-        if userInput == "1":
-            while userInput != 'E':
-                os.system(clearCMD)
-                print("Survivors\n", testedSurvivors.to_string(), '\n')
-                userInput = PredictionPlots(testedSurvivors)
-            userInput = ''
-        if userInput == "2":
-            while userInput != 'E':
-                os.system(clearCMD)
-                print("Non Survivors\n", testedNonSurvivors.to_string(), '\n')
-                userInput = PredictionPlots(testedNonSurvivors)
-            userInput = ''
-        os.system(clearCMD)
 
 def VisualizeEda(data, visualizeInput):
     category = "None"

@@ -1,7 +1,9 @@
+Clear Command: "cls"
 Unified dataset: "True"
 SplitRatio (Train/Test): "60/40"
 
 Training dataset: "..\OTH_DATA\MS_2_Scenario_data.csv"
 Testing dataset: "..\OTH_DATA\MS_2_Scenario_data.csv"
 
-Max Iteration: "3000"
+Max Iteration: "10000"
+K-Means: "200
