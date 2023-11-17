@@ -104,6 +104,9 @@ def Clean(data, config):
 
     # Obesity Level [Obesity_Level] (In Text format) (Classification)
     data['Obesity_Level'] = data['Obesity_Level'].replace(config['Classifications'], regex=True)
+    data.insert(len(data.columns), 'Obese', 0)
+    data.loc[data['Obesity_Level'] <= 1, 'Obese'] = 0
+    data.loc[data['Obesity_Level'] > 1, 'Obese'] = 1
 
     # Drop Unamed Columns
     data.drop('Unnamed: 18', axis='columns', inplace=True)

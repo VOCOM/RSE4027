@@ -14,6 +14,9 @@ from utility import Metrics, VisualizeMetrics
 # Math Import
 import numpy
 
+# Dataframe Import
+import pandas
+
 # Machine Learning Imports
 from sklearn import linear_model
 from sklearn.neighbors import KNeighborsRegressor
@@ -27,25 +30,19 @@ def LogisticRegression(predictionData, trainData, testData, parameters, config):
     predictionData.drop(predictionData.index, inplace=True)
     # Logistic Regression
     regr = linear_model.LogisticRegression(max_iter=config['Max Iteration'])
-    X = trainData[parameters['Input Parameters']].values
+    X = trainData[parameters['Input Parameters']]
     y = list(trainData[parameters['Prediction Element']])
     regr = regr.fit(X,y)
     # Prediction
     predictions = regr.predict(testData[parameters['Input Parameters']])
+    predictionsProbabilities = regr.predict_proba(testData[parameters['Input Parameters']])
     predictionData = testData.copy()
     predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
     predictionData.drop('Abnormal', axis='columns', inplace=True)
+    predictionData.sort_values('Prediction', inplace=True)
     # Metrics
-    i = 0
-    print(predictionData.sort_values('Prediction').to_string())
-    while i < config['No. of Classes']:
-        i += 1
-    
-    # metrics.append(Metrics(testData[parameters['Prediction Element']], predictionData[parameters['Prediction Element']]))
-    print("Logistic Regression Metrics")
-    # VisualizeMetrics()
-
-    return 'Logistic Regression', predictionData
+    metrics = Metrics(predictionData[parameters['Prediction Element']].values, predictions, predictionsProbabilities, config['Multi-Class'])
+    return 'Logistic Regression', predictionData, metrics
 
 def KNearestNeigbour(predictionData, trainData, testData, parameters, config):
     # Reset Prediction dataframe
@@ -69,18 +66,20 @@ def KNearestNeigbour(predictionData, trainData, testData, parameters, config):
     return 'K-Nearest Neighbour', predictionData
 
 def ConfusionMatrix(trueValue, predictedValue, predictionParameter):
-    label   = [predictionParameter, 'Not ' + predictionParameter]
+    label   = [predictionParameter['Prediction Element'], 'Not ' + predictionParameter['Prediction Element']]
     cm = confusion_matrix(trueValue, predictedValue)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label)
     disp.plot()
     plt.show()
 
-def PredictionResults(lastAppliedModel, predictionData, predictionParameter, config):
+def PredictionResults(lastAppliedModel, predictionData, predictionParameter, metrics, config):
     clearCMD = config['Clear Command']
     userInput = ''
     options = [
-        '1) ' + predictionParameter,
-        '2) Non-' + predictionParameter,
+        '1) ' + predictionParameter['Prediction Element'],
+        '2) Non-' + predictionParameter['Prediction Element'],
+        '3) Confusion Matrix',
+        '4) Metrics',
         "E) Exit"
     ]
     if not len(predictionData):
@@ -89,9 +88,14 @@ def PredictionResults(lastAppliedModel, predictionData, predictionParameter, con
     while userInput != "E":
         os.system(clearCMD)
         if userInput == "1":
-            print(predictionParameter, '\n', predictionData.to_string(), '\n')
+            print(predictionParameter['Prediction Element'], '\n', predictionData.to_string(), '\n')
         if userInput == "2":
-            print('Non ' + predictionParameter, '\n', predictionData.to_string(), '\n')
+            print('Non ' + predictionParameter['Prediction Element'], '\n', predictionData.to_string(), '\n')
+        if userInput == "3":
+            ConfusionMatrix(predictionData[predictionParameter['Prediction Element']], predictionData['Prediction'], predictionParameter)
+        if userInput == "4":
+            print(lastAppliedModel, 'Metrics')
+            VisualizeMetrics(metrics)
         print("Model Used:", lastAppliedModel)
         for option in options:
             print(option)

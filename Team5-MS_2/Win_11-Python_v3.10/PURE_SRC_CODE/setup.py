@@ -34,7 +34,7 @@ def Setup():
         if "Clear Command: " in line:
             clearCMD = line.strip().split("\"")[1]
         if "Unified dataset: " in line:
-            isUnified = bool(line.strip().split("\"")[1])
+            isUnified = bool(line.strip().split("\"")[1].lower() == "true")
         if "SplitRatio (Train/Test): " in line:
             if isUnified:
                 line = line.strip().split("\"")[1].split("/")
@@ -48,7 +48,7 @@ def Setup():
         if "K-Means: " in line:
             kMeans = int(line.strip().split("\"")[1])
         if "Multi-Class: " in line:
-            mClass = bool(line.strip().split("\"")[1])
+            mClass = bool(line.strip().split("\"")[1].lower() == "true")
 
     trainData = pandas.read_csv(trainingDataPath)
     if isUnified:

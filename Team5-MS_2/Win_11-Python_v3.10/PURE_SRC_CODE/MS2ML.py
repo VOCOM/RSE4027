@@ -14,11 +14,11 @@ clearCMD = config['Clear Command']
 classification = {
     'Insufficient_Weight' : 0,
     'Normal_Weight' : 1,
-    'Overweight_Level_I' : 2,
     'Overweight_Level_II' : 3,
-    'Obesity_Type_I' : 4,
+    'Overweight_Level_I' : 2,
+    'Obesity_Type_III' : 6,
     'Obesity_Type_II' : 5,
-    'Obesity_Type_III' : 6
+    'Obesity_Type_I' : 4
 }
 # Binary Discretisation
 binary = {
@@ -29,6 +29,7 @@ binary = {
 config.update({'Classifications' : classification})
 config.update({'No. of Classes' : len(classification)})
 config.update({'Binary' : binary})
+config.update({'Cutoff' : 1})
 
 cleanTrainData = Clean(rawTrainData.copy(), config)
 cleanTestData = Clean(rawTestData.copy(), config)
@@ -37,7 +38,7 @@ predictionData = pandas.DataFrame(columns=cleanTestData.columns)
 
 parameters = {
     'Input Parameters' : ['Age', 'H', 'W', 'GR', 'FAVC', 'NCP', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE'],
-    'Prediction Element' : 'Obesity_Level'
+    'Prediction Element' : 'Obese'
 }
 
 userInput = 0
@@ -50,9 +51,9 @@ while userInput != "E":
         print("Input Test Data")
         print(cleanTestData.to_string(), "\n")
     if userInput == "4":
-        lastAppliedModel, predictionData = LogisticRegression(predictionData, cleanTrainData, cleanTestData, parameters, config)
+        lastAppliedModel, predictionData, metrics = LogisticRegression(predictionData, cleanTrainData, cleanTestData, parameters, config)
     if userInput == "5":
-        lastAppliedModel, predictionData = KNearestNeigbour(predictionData, cleanTrainData, cleanTestData, parameters, config)
+        lastAppliedModel, predictionData, metrics = KNearestNeigbour(predictionData, cleanTrainData, cleanTestData, parameters, config)
     if userInput == "6":
-        PredictionResults(lastAppliedModel, predictionData, 'Obese', config)
+        PredictionResults(lastAppliedModel, predictionData, parameters, metrics, config)
     userInput = MLOperations()
