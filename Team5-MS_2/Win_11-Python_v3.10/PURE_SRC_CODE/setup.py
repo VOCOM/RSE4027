@@ -5,6 +5,8 @@
 # @date 16/11/23
 #
 # Changelog:
+# - 16/11/23
+#   Setup returns configuration parameters
 ##
 
 # OS Import
@@ -26,10 +28,10 @@ import eda
 clearCMD = "cls"
 
 def Setup():
-    config = open('../SCRIPTS_CFG/config.txt')
+    configFile = open('../SCRIPTS_CFG/config.txt')
     isUnified = False
     splitRatio = 0
-    for line in config.readlines():
+    for line in configFile.readlines():
         if "Unified dataset" in line:
             isUnified = bool(line.strip().split("\"")[1])
         if "SplitRatio (Train/Test): " in line:
@@ -60,7 +62,9 @@ def Setup():
     else:
         testData = pandas.read_csv(testDataPath)
     
-    return trainData, testData
+    config = [isUnified, splitRatio]
+
+    return trainData, testData, config
 
 def EDAOperations():
     userInput = ''
@@ -586,58 +590,3 @@ def VisualizeEda(data, visualizeInput):
         input("Press Enter key to continue...")
     os.system(clearCMD)
     # return False
-
-# dataPath = ""
-# Menu()
-# rawData, rawTest = Setup()
-# # rawData = pandas.read_csv(dataPath + "/train/MS_1_Scenario_train.csv")
-# # test = pandas.read_csv(dataPath + "/test/MS_1_Scenario_test.csv")
-
-# rawData = eda.Clean(rawData)
-# test = eda.Clean(rawTest)
-
-# extractedData = eda.Extract(rawData)
-# test = eda.Extract(test)
-
-# testedSurvivors = pandas.DataFrame(columns=test.columns)
-# testedNonSurvivors = pandas.DataFrame(columns=test.columns)
-
-# lastAppliedModel = ''
-
-# userInput = 0
-# while Operations():
-#     os.system(clearCMD)
-#     if userInput == "1":
-#         pass
-#     if userInput == "2":
-#         print("Input Training Data")
-#         print(rawData.to_string(), "\n")
-#     if userInput == "3":
-#         print("Cleaned Training Data")
-#         print(extractedData.to_string(), "\n")
-#     if userInput == "4":
-#         print("Cleaned Testing Data")
-#         print(test.to_string(), "\n")
-#     if userInput == "5":
-#         os.system(clearCMD)
-#         print("1) Original data")
-#         print("2) Extracted data")
-#         print("3) Test data")
-#         userInput = input("Data to be analysed:")
-#         if userInput == "1":
-#             data = rawData
-#         elif userInput == "2":
-#             data = extractedData
-#         else:
-#             data = test
-#         print()
-#         while Plots(data):
-#             pass
-#     if userInput == "6":
-#         FilteredTable()
-#     if userInput == "7":
-#         LogisticRegression()
-#     if userInput == "8":
-#         KNearestNeigbour()
-#     if userInput == "9":
-#         PrintPredictionResults()

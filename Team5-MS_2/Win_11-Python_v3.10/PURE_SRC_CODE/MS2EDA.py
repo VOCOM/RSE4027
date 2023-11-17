@@ -1,9 +1,14 @@
+## 
+# Changelog:
+# 
+##
+
 import os
 from setup import Setup, EDAOperations, Plots, VisualizeEda
-from eda import Clean, Extract
+from eda import Clean
 
 clearCMD = 'cls'
-rawTrainData, rawTestData = Setup()
+rawTrainData, rawTestData, config = Setup()
 
 cleanTrainData = Clean(rawTrainData.copy())
 cleanTestData = Clean(rawTestData.copy())

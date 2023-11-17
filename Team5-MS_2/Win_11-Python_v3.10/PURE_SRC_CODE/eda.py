@@ -1,3 +1,9 @@
+## 
+# Changelog:
+# - 16/11/23
+#   Reused cleaning agent for binary columns
+##
+
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import pandas
 import numpy as np
@@ -99,6 +105,9 @@ def Clean(data):
     # Mode of Travel [MTRANS] (In Text format) (Consider Discretization / Binning)
 
     # Obesity Level [Obesity_Level] (In Text format) (Classification)
+
+    # Drop Unamed Columns
+    data.drop('Unnamed: 18', axis='columns', inplace=True)
     return data
 
 def Extract(data):
