@@ -36,8 +36,6 @@ def PrintDistribution(distributionTable):
 def str2NaN(value):
     if value == "0":
         value = np.nan
-    return value
-
 def Clean(data):
     # Rename Columns
     data.rename(columns={'Patient ID' : 'ID'}, inplace=True)
@@ -49,10 +47,15 @@ def Clean(data):
     # Abnormal
     data.insert(len(data.columns), "Abnormal", False)
     
-    # Gender [G] (Consider Discretization)
+    # Gender [G] (Consider Discretization), 'F' = female, 'M' = male, 'O' = others
+    data['Female'] = 0
+    data['Male'] = 0
     data['G'] = data['G'].str.lower()
-    data['G'] = data['G'].replace({'female' : 1}, regex=True)
-    data['G'] = data['G'].replace({'male' : 0}, regex=True)
+    data.loc[data['G'] == 'male', 'Male'] = 1
+    data.loc[data['G'] == 'female', 'Female'] = 1
+    # data['Others(Gender)'] = 0
+    # data.loc[~data['G'].isin(['male','female']), 'Others(Gender)'] = 1
+    data.drop('G', axis='columns', inplace=True)
 
     # Age [Age] (Consider Binning)
     data['Age'] = data['Age'].round(decimals=0)
@@ -80,6 +83,18 @@ def Clean(data):
     data['NCP'] = data['NCP'].round(decimals=0)
 
     # In-between Meals [CAEC] (Consider Discretization)
+    data['caecNo'] = 0
+    data['caecSometimes'] = 0
+    data['caecFrequently'] = 0
+    data['caecAlways'] = 0
+    data['CAEC'] = data['CAEC'].str.lower()
+    data.loc[data['CAEC'] == 'no', 'caecNo'] = 1
+    data.loc[data['CAEC'] == 'sometimes', 'Sometimes'] = 1
+    data.loc[data['CAEC'] == 'frequently', 'Frequently'] = 1
+    data.loc[data['CAEC'] == 'always', 'Always'] = 1
+    # data['Others(CAEC)'] = 0
+    # data.loc[~data['CAEC'].isin(['no','sometimes','frequently','always']), 'Others(CAEC)'] = 1
+    data.drop('CAEC', axis='columns', inplace=True)
 
     # Smoker [SMOKE]
     data['SMOKE'] = data['SMOKE'].str.lower()
@@ -126,3 +141,23 @@ def ErrorCalc(predicted, actual):
     rmse = np.sqrt(mse)
 
     return mae, mse, rmse
+
+# def VisualizeEda(data, option):
+#     if option == "1":
+#         category = 'G' # Gender
+#     if option == "2":
+#         category = 'Age'
+#     if option == "3":
+#         category = 'H' # Height
+#     if option == "4":
+#         category = 'W' # Weight
+#     if option == "5":
+#         category = 'GR' # fam_hist_over-wt/Genetic Risk
+#     if option == "6":
+#         category = 'FAVC'
+#     if option == "7":
+#         category = 'NCP'
+#     if option == "8":
+#         category = 'CAEC'
+#     if option == "9":
+#         category = 'Smoke'
