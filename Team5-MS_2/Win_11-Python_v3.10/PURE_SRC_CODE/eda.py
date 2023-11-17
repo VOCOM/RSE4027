@@ -41,6 +41,8 @@ def Clean(data, config):
     # data['Others(Gender)'] = 0
     # data.loc[~data['G'].isin(['male','female']), 'Others(Gender)'] = 1
     data.drop('G', axis='columns', inplace=True)
+    # data.loc[data['Male'] == '1','Gender'] = 0
+    # data.loc[data['Female'] == '1','Gender'] = 1
 
     # Age [Age] (Consider Binning)
     data['Age'] = data['Age'].round(decimals=0).astype(int)
@@ -120,8 +122,8 @@ def DropAbnormalities(data):
 def VisualizeEda(data):
     data.loc[data['Male'] == '1','Gender'] = 0
     data.loc[data['Female'] == '1','Gender'] = 1
-    data.loc[data['Others(Gender)'] == '1','Gender'] = 2
-    corr_matrix = data['Gender','Age'].corr()
+    # data.loc[data['Others(Gender)'] == '1','Gender'] = 2
+    corr_matrix = data[['Gender','Age']].corr()
     plt.pyplot.figure(figsize=(9, 8))
     sns.heatmap(data = corr_matrix, cmap='BrBG', annot=True, linewidths=0.2)
     plt.pyplot.show()
