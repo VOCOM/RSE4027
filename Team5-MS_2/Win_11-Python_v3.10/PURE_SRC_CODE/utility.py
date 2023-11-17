@@ -18,7 +18,7 @@ def Str2NaN(value):
 def Metrics(testValue, predictionValue):
     trueValue = testValue
     predictedValue = predictionValue
-    auc     = roc_auc_score(trueValue, predictedValue)
+    # auc     = roc_auc_score(trueValue, predictedValue)
     ca      = accuracy_score(trueValue, predictedValue)
     mcc     = matthews_corrcoef(trueValue, predictedValue)
     mae     = mean_absolute_error(trueValue, predictedValue)
@@ -43,7 +43,7 @@ def Metrics(testValue, predictionValue):
     print("Precision: {:.5f}".format(metrics['Precision']))
     print("Recall:    {:.5f}".format(metrics['Recall']))
     print("F1 Score:  {:.5f}".format(metrics['F1']))
-    print("AUC:       {:.5f}".format(metrics['AUC']))
+    # print("AUC:       {:.5f}".format(metrics['AUC']))
     print("MCC:       {:.5f}".format(metrics['MCC']))
     print("MAE:       {:.5f}".format(metrics['MAE']))
     print("MSE:       {:.5f}".format(metrics['MSE']))

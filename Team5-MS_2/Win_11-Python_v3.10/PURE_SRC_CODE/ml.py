@@ -36,8 +36,8 @@ def LogisticRegression(predictionData, trainData, testData, parameters, config):
     predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
     predictionData.drop('Abnormal', axis='columns', inplace=True)
     # Metrics
-    # print("Logistic Regression Metrics")
-    # Metrics(testData[parameters['Prediction Element']], predictionData[parameters['Prediction Element']])
+    print("Logistic Regression Metrics")
+    Metrics(testData[parameters['Prediction Element']], predictionData[parameters['Prediction Element']])
 
     return 'Logistic Regression', predictionData
 
@@ -52,7 +52,7 @@ def KNearestNeigbour(predictionData, trainData, testData, parameters, config):
     knn_model.fit(X, y)
     knn_model.feature_names_in_ = parameters
     # Prediction
-    predictions = knn_model.predict(testData[parameters['Input Parameters']]) # TODO
+    predictions = knn_model.predict(testData[parameters['Input Parameters']].values).round(decimals=0).astype(int)
     predictionData = testData.copy()
     predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
     predictionData.drop('Abnormal', axis='columns', inplace=True)
