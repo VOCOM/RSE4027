@@ -14,11 +14,11 @@ clearCMD = config['Clear Command']
 classification = {
     'Insufficient_Weight' : 0,
     'Normal_Weight' : 1,
-    'Overweight_Level_I' : 2,
     'Overweight_Level_II' : 3,
-    'Obesity_Type_I' : 4,
+    'Overweight_Level_I' : 2,
+    'Obesity_Type_III' : 6,
     'Obesity_Type_II' : 5,
-    'Obesity_Type_III' : 6
+    'Obesity_Type_I' : 4
 }
 # Binary Discretisation
 binary = {
@@ -29,6 +29,7 @@ binary = {
 config.update({'Classifications' : classification})
 config.update({'No. of Classes' : len(classification)})
 config.update({'Binary' : binary})
+config.update({'Cutoff' : 1})
 
 cleanTrainData = Clean(rawTrainData.copy(), config)
 cleanTestData = Clean(rawTestData.copy(), config)
@@ -36,7 +37,7 @@ cleanTestData = Clean(rawTestData.copy(), config)
 predictionData = pandas.DataFrame(columns=cleanTestData.columns)
 
 parameters = {
-    'Input Parameters' : ['Age', 'H', 'W', 'GR', 'FAVC', 'NCP', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE'],
+    'Input Parameters' : ['Age', 'H', 'W'],#, 'GR', 'FAVC', 'NCP', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE'],
     'Prediction Element' : 'Obesity_Level'
 }
 

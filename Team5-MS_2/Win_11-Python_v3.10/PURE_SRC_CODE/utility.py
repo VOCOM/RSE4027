@@ -15,18 +15,25 @@ def Str2NaN(value):
         value = numpy.nan
     return value
 
-def Metrics(testValue, predictionValue):
+def Metrics(testValue, predictionValue, predictedProbability = 0, isMultiClass = False):
     trueValue = testValue
     predictedValue = predictionValue
-    auc     = roc_auc_score(trueValue, predictedValue)
+    average = 'micro'
+    if isMultiClass:
+        auc         = roc_auc_score(trueValue, predictedProbability, multi_class='ovr')
+        precision   = precision_score(trueValue, predictedValue, average=average)
+        recall      = recall_score(trueValue, predictedValue, average=average)
+        f1score     = f1_score(trueValue, predictedValue, average=average)
+    else:
+        auc = roc_auc_score(trueValue, predictedValue)
+        precision   = precision_score(trueValue, predictedValue)
+        recall      = recall_score(trueValue, predictedValue)
+        f1score     = f1_score(trueValue, predictedValue)
     ca      = accuracy_score(trueValue, predictedValue)
     mcc     = matthews_corrcoef(trueValue, predictedValue)
     mae     = mean_absolute_error(trueValue, predictedValue)
     mse     = mean_squared_error(trueValue, predictedValue)
     rmse    = numpy.sqrt(mse)
-    precision   = precision_score(trueValue, predictedValue)
-    recall      = recall_score(trueValue, predictedValue)
-    f1score     = f1_score(trueValue, predictedValue)
     metrics = {
         'AUC'   : auc,
         'CA'    : ca,

@@ -14,6 +14,9 @@ from utility import Metrics, VisualizeMetrics
 # Math Import
 import numpy
 
+# Dataframe Import
+import pandas
+
 # Machine Learning Imports
 from sklearn import linear_model
 from sklearn.neighbors import KNeighborsRegressor
@@ -27,23 +30,24 @@ def LogisticRegression(predictionData, trainData, testData, parameters, config):
     predictionData.drop(predictionData.index, inplace=True)
     # Logistic Regression
     regr = linear_model.LogisticRegression(max_iter=config['Max Iteration'])
-    X = trainData[parameters['Input Parameters']].values
+    X = trainData[parameters['Input Parameters']]
     y = list(trainData[parameters['Prediction Element']])
     regr = regr.fit(X,y)
     # Prediction
     predictions = regr.predict(testData[parameters['Input Parameters']])
+    predictionsProbabilities = regr.predict_proba(testData[parameters['Input Parameters']])
     predictionData = testData.copy()
     predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
     predictionData.drop('Abnormal', axis='columns', inplace=True)
+    predictionData.sort_values('Prediction', inplace=True)
+
+    print(predictionsProbabilities[0])
+
     # Metrics
-    i = 0
-    print(predictionData.sort_values('Prediction').to_string())
-    while i < config['No. of Classes']:
-        i += 1
-    
-    # metrics.append(Metrics(testData[parameters['Prediction Element']], predictionData[parameters['Prediction Element']]))
+    metrics = Metrics(predictionData[parameters['Prediction Element']].values, predictions, predictionsProbabilities, config['Multi-Class'])
+
     print("Logistic Regression Metrics")
-    # VisualizeMetrics()
+    VisualizeMetrics(metrics)
 
     return 'Logistic Regression', predictionData
 
