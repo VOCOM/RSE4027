@@ -1,13 +1,13 @@
 ## 
 # Changelog:
 # - 16/11/23
-#   Reused cleaning agent for binary columns
+#   Reused cleaning agent for config['Binary'] columns
 ##
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+from utility import Str2NaN
+import numpy
 import pandas
-import numpy as np
-import math
 
 def Find(data, category):
     distributionTable = {}
@@ -18,25 +18,7 @@ def Find(data, category):
             distributionTable[entry] = 1
     return distributionTable
 
-def Info(data):
-    for header in data.dict.keys():
-        print(header, len(data.dict.get(header)), "entries")
-    print()
-        
-    for header in data.dict.keys():
-        print(header)
-        distributionTable = Find(data, header)
-        PrintDistribution(distributionTable)
-
-def PrintDistribution(distributionTable):
-        for distribution in distributionTable.items():
-            print(distribution)
-        print()
-
-def str2NaN(value):
-    if value == "0":
-        value = np.nan
-def Clean(data):
+def Clean(data, config):
     # Rename Columns
     data.rename(columns={'Patient ID' : 'ID'}, inplace=True)
     data.rename(columns={'Gender' : 'G'}, inplace=True)
@@ -58,7 +40,7 @@ def Clean(data):
     data.drop('G', axis='columns', inplace=True)
 
     # Age [Age] (Consider Binning)
-    data['Age'] = data['Age'].round(decimals=0)
+    data['Age'] = data['Age'].round(decimals=0).astype(int)
 
     # Height [H]
     data['H'] = data['H'].round(decimals=2)
@@ -68,19 +50,17 @@ def Clean(data):
 
     # Family history of over-weight / Genetic Risk [GR]
     data['GR'] = data['GR'].str.lower()
-    data['GR'] = data['GR'].replace({'yes' : 1}, regex=True)
-    data['GR'] = data['GR'].replace({'no' : 0}, regex=True)
+    data['GR'] = data['GR'].replace(config['Binary'], regex=True)
 
     # High Caloric Intake [FAVC]
     data['FAVC'] = data['FAVC'].str.lower()
-    data['FAVC'] = data['FAVC'].replace({'yes' : 1}, regex=True)
-    data['FAVC'] = data['FAVC'].replace({'no' : 0}, regex=True)
+    data['FAVC'] = data['FAVC'].replace(config['Binary'], regex=True)
 
     # Vegetable Intake Frequency [FCVC]
     data['FCVC'] = data['FCVC'].round(decimals=2)
 
     # Main Meals [NCP]
-    data['NCP'] = data['NCP'].round(decimals=0)
+    data['NCP'] = data['NCP'].round(decimals=0).astype(int)
 
     # In-between Meals [CAEC] (Consider Discretization)
     data['caecNo'] = 0
@@ -98,16 +78,14 @@ def Clean(data):
 
     # Smoker [SMOKE]
     data['SMOKE'] = data['SMOKE'].str.lower()
-    data['SMOKE'] = data['SMOKE'].replace({'yes' : 1}, regex=True)
-    data['SMOKE'] = data['SMOKE'].replace({'no' : 0}, regex=True)
+    data['SMOKE'] = data['SMOKE'].replace(config['Binary'], regex=True)
 
     # Water intake frequency [CH2O]
     data['CH2O'] = data['CH2O'].round(decimals=2)
 
     # Tracks calorie intake [SCC]
     data['SCC'] = data['SCC'].str.lower()
-    data['SCC'] = data['SCC'].replace({'yes' : 1}, regex=True)
-    data['SCC'] = data['SCC'].replace({'no' : 0}, regex=True)
+    data['SCC'] = data['SCC'].replace(config['Binary'], regex=True)
 
     # Physical Activity Frequency [PAF]
     data['FAF'] = data['FAF'].round(decimals=2)
@@ -120,12 +98,13 @@ def Clean(data):
     # Mode of Travel [MTRANS] (In Text format) (Consider Discretization / Binning)
 
     # Obesity Level [Obesity_Level] (In Text format) (Classification)
+    data['Obesity_Level'] = data['Obesity_Level'].replace(config['Classifications'], regex=True)
 
     # Drop Unamed Columns
     data.drop('Unnamed: 18', axis='columns', inplace=True)
     return data
 
-def Extract(data):
+def DropAbnormalities(data):
     normalData = pandas.DataFrame(columns=data.columns)
     i = 0
     while i < len(data):
@@ -134,30 +113,3 @@ def Extract(data):
         i += 1
     normalData.drop('Abnormal', axis='columns', inplace=True)
     return normalData
-
-def ErrorCalc(predicted, actual):
-    mae = mean_absolute_error(predicted, actual)
-    mse = mean_squared_error(predicted, actual)
-    rmse = np.sqrt(mse)
-
-    return mae, mse, rmse
-
-# def VisualizeEda(data, option):
-#     if option == "1":
-#         category = 'G' # Gender
-#     if option == "2":
-#         category = 'Age'
-#     if option == "3":
-#         category = 'H' # Height
-#     if option == "4":
-#         category = 'W' # Weight
-#     if option == "5":
-#         category = 'GR' # fam_hist_over-wt/Genetic Risk
-#     if option == "6":
-#         category = 'FAVC'
-#     if option == "7":
-#         category = 'NCP'
-#     if option == "8":
-#         category = 'CAEC'
-#     if option == "9":
-#         category = 'Smoke'
