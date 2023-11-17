@@ -9,7 +9,7 @@
 import os
 
 # Utility Import
-from utility import Metrics
+from utility import Metrics, VisualizeMetrics
 
 # Math Import
 import numpy
@@ -36,8 +36,14 @@ def LogisticRegression(predictionData, trainData, testData, parameters, config):
     predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
     predictionData.drop('Abnormal', axis='columns', inplace=True)
     # Metrics
+    i = 0
+    print(predictionData.sort_values('Prediction').to_string())
+    while i < config['No. of Classes']:
+        i += 1
+    
+    # metrics.append(Metrics(testData[parameters['Prediction Element']], predictionData[parameters['Prediction Element']]))
     print("Logistic Regression Metrics")
-    Metrics(testData[parameters['Prediction Element']], predictionData[parameters['Prediction Element']])
+    # VisualizeMetrics()
 
     return 'Logistic Regression', predictionData
 

@@ -1,7 +1,7 @@
 ## 
 # Changelog:
 # - 16/11/23
-#   Reused cleaning agent for binary columns
+#   Reused cleaning agent for config['Binary'] columns
 ##
 
 from sklearn.metrics import mean_absolute_error, mean_squared_error
@@ -18,23 +18,7 @@ def Find(data, category):
             distributionTable[entry] = 1
     return distributionTable
 
-def Clean(data):
-    # Classification
-    classification = {
-        'Insufficient_Weight' : 0,
-        'Normal_Weight' : 1,
-        'Overweight_Level_I' : 2,
-        'Overweight_Level_II' : 3,
-        'Obesity_Type_I' : 4,
-        'Obesity_Type_II' : 5,
-        'Obesity_Type_III' : 6
-    }
-    # Binary Discretisation
-    binary = {
-        'no' : 0,
-        'yes' : 1
-    }
-
+def Clean(data, config):
     # Rename Columns
     data.rename(columns={'Patient ID' : 'ID'}, inplace=True)
     data.rename(columns={'Gender' : 'G'}, inplace=True)
@@ -61,11 +45,11 @@ def Clean(data):
 
     # Family history of over-weight / Genetic Risk [GR]
     data['GR'] = data['GR'].str.lower()
-    data['GR'] = data['GR'].replace(binary, regex=True)
+    data['GR'] = data['GR'].replace(config['Binary'], regex=True)
 
     # High Caloric Intake [FAVC]
     data['FAVC'] = data['FAVC'].str.lower()
-    data['FAVC'] = data['FAVC'].replace(binary, regex=True)
+    data['FAVC'] = data['FAVC'].replace(config['Binary'], regex=True)
 
     # Vegetable Intake Frequency [FCVC]
     data['FCVC'] = data['FCVC'].round(decimals=2)
@@ -77,14 +61,14 @@ def Clean(data):
 
     # Smoker [SMOKE]
     data['SMOKE'] = data['SMOKE'].str.lower()
-    data['SMOKE'] = data['SMOKE'].replace(binary, regex=True)
+    data['SMOKE'] = data['SMOKE'].replace(config['Binary'], regex=True)
 
     # Water intake frequency [CH2O]
     data['CH2O'] = data['CH2O'].round(decimals=2)
 
     # Tracks calorie intake [SCC]
     data['SCC'] = data['SCC'].str.lower()
-    data['SCC'] = data['SCC'].replace(binary, regex=True)
+    data['SCC'] = data['SCC'].replace(config['Binary'], regex=True)
 
     # Physical Activity Frequency [PAF]
     data['FAF'] = data['FAF'].round(decimals=2)
@@ -97,7 +81,7 @@ def Clean(data):
     # Mode of Travel [MTRANS] (In Text format) (Consider Discretization / Binning)
 
     # Obesity Level [Obesity_Level] (In Text format) (Classification)
-    data['Obesity_Level'] = data['Obesity_Level'].replace(classification, regex=True)
+    data['Obesity_Level'] = data['Obesity_Level'].replace(config['Classifications'], regex=True)
 
     # Drop Unamed Columns
     data.drop('Unnamed: 18', axis='columns', inplace=True)
@@ -112,10 +96,3 @@ def DropAbnormalities(data):
         i += 1
     normalData.drop('Abnormal', axis='columns', inplace=True)
     return normalData
-
-def ErrorCalc(predicted, actual):
-    mae = mean_absolute_error(predicted, actual)
-    mse = mean_squared_error(predicted, actual)
-    rmse = numpy.sqrt(mse)
-
-    return mae, mse, rmse

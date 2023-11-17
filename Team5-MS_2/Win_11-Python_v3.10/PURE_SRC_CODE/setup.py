@@ -29,6 +29,7 @@ def Setup():
     splitRatio = 0
     maxIterations = 0
     kMeans = 0
+    mClass = False
     for line in configFile.readlines():
         if "Clear Command: " in line:
             clearCMD = line.strip().split("\"")[1]
@@ -46,6 +47,8 @@ def Setup():
             maxIterations = int(line.strip().split("\"")[1])
         if "K-Means: " in line:
             kMeans = int(line.strip().split("\"")[1])
+        if "Multi-Class: " in line:
+            mClass = bool(line.strip().split("\"")[1])
 
     trainData = pandas.read_csv(trainingDataPath)
     if isUnified:
@@ -70,6 +73,7 @@ def Setup():
         'Clear Command' : clearCMD,
         'Unified' : isUnified,
         'Split Ratio' : splitRatio,
+        'Multi-Class' : mClass,
         'Max Iteration' : maxIterations,
         'K-Means' : kMeans
     }
