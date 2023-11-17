@@ -8,6 +8,9 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 from utility import Str2NaN
 import numpy
 import pandas
+import matplotlib as plt
+import seaborn as sns
+
 
 def Find(data, category):
     distributionTable = {}
@@ -113,3 +116,12 @@ def DropAbnormalities(data):
         i += 1
     normalData.drop('Abnormal', axis='columns', inplace=True)
     return normalData
+
+def VisualizeEda(data):
+    data.loc[data['Male'] == '1','Gender'] = 0
+    data.loc[data['Female'] == '1','Gender'] = 1
+    data.loc[data['Others(Gender)'] == '1','Gender'] = 2
+    corr_matrix = data['Gender','Age'].corr()
+    plt.pyplot.figure(figsize=(9, 8))
+    sns.heatmap(data = corr_matrix, cmap='BrBG', annot=True, linewidths=0.2)
+    plt.pyplot.show()

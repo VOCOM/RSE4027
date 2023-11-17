@@ -9,9 +9,28 @@ from eda import Clean, DropAbnormalities
 
 clearCMD = 'cls'
 rawTrainData, rawTestData, config = Setup()
+# Classifications
+classification = {
+    'Insufficient_Weight' : 0,
+    'Normal_Weight' : 1,
+    'Overweight_Level_I' : 2,
+    'Overweight_Level_II' : 3,
+    'Obesity_Type_I' : 4,
+    'Obesity_Type_II' : 5,
+    'Obesity_Type_III' : 6
+}
+# Binary Discretisation
+binary = {
+    'no' : 0,
+    'yes' : 1
+}
 
-cleanTrainData = Clean(rawTrainData.copy())
-cleanTestData = Clean(rawTestData.copy())
+config.update({'Classifications' : classification})
+config.update({'No. of Classes' : len(classification)})
+config.update({'Binary' : binary})
+
+cleanTrainData = Clean(rawTrainData.copy(), config)
+cleanTestData = Clean(rawTestData.copy(), config)
 
 userInput = EDAOperations()
 
@@ -25,4 +44,6 @@ while userInput != "E":
         print(rawTestData.to_string(), '\n')
     if userInput == "5":
         print(cleanTestData.to_string(), '\n')
+    if userInput == "7":
+        VisualizeEda(cleanTestData)
     userInput = EDAOperations()
