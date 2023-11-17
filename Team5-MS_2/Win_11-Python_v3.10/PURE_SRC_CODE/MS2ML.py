@@ -37,8 +37,8 @@ cleanTestData = Clean(rawTestData.copy(), config)
 predictionData = pandas.DataFrame(columns=cleanTestData.columns)
 
 parameters = {
-    'Input Parameters' : ['Age', 'H', 'W'],#, 'GR', 'FAVC', 'NCP', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE'],
-    'Prediction Element' : 'Obesity_Level'
+    'Input Parameters' : ['Age', 'H', 'W', 'GR', 'FAVC', 'NCP', 'SMOKE', 'CH2O', 'SCC', 'FAF', 'TUE'],
+    'Prediction Element' : 'Obese'
 }
 
 userInput = 0
@@ -51,9 +51,9 @@ while userInput != "E":
         print("Input Test Data")
         print(cleanTestData.to_string(), "\n")
     if userInput == "4":
-        lastAppliedModel, predictionData = LogisticRegression(predictionData, cleanTrainData, cleanTestData, parameters, config)
+        lastAppliedModel, predictionData, metrics = LogisticRegression(predictionData, cleanTrainData, cleanTestData, parameters, config)
     if userInput == "5":
-        lastAppliedModel, predictionData = KNearestNeigbour(predictionData, cleanTrainData, cleanTestData, parameters, config)
+        lastAppliedModel, predictionData, metrics = KNearestNeigbour(predictionData, cleanTrainData, cleanTestData, parameters, config)
     if userInput == "6":
-        PredictionResults(lastAppliedModel, predictionData, 'Obese', config)
+        PredictionResults(lastAppliedModel, predictionData, parameters, metrics, config)
     userInput = MLOperations()

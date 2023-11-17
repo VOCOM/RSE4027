@@ -5,6 +5,6 @@ SplitRatio (Train/Test): "60/40"
 Training dataset: "..\OTH_DATA\MS_2_Scenario_data.csv"
 Testing dataset: "..\OTH_DATA\MS_2_Scenario_data.csv"
 
-Multi-Class: "True"
+Multi-Class: "False"
 Max Iteration: "20000"
 K-Means: "200
