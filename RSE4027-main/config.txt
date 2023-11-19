@@ -1,0 +1,2 @@
+Milestone1_train_csv: "Milestone1\train\MS_1_Scenario_train.csv"
+Milestone1_test_csv: "Milestone1\test\MS_1_Scenario_test.csv"
