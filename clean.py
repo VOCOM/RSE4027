@@ -1,32 +1,77 @@
 import pandas as pd
 
+def round_columns_to_one_decimal(df, column_names):
+    for column_name in column_names:
+        if column_name not in df.columns:
+            print(f"Column '{column_name}' not found in the DataFrame.")
+            return df
+
+        df[column_name] = df[column_name].round(1)
+
+    print("Modified data:")
+    print(df)
+
+    return df
+
+def round_columns_to_whole(df, column_names):
+    for column_name in column_names:
+        if column_name not in df.columns:
+            print(f"Column '{column_name}' not found in the DataFrame.")
+            return df
+
+        df[column_name] = df[column_name].round(0)
+
+    print("Modified data:")
+    print(df)
+
+    return df
+
 # Load the CSV file into a DataFrame
-csv_file = "Milestone1/train/MS_1_Scenario_train.csv"
-df = pd.read_csv(csv_file)
+df = pd.read_csv('./Team5-MS_2/MS_2_Scenario_data.csv')
 
-# Define a function to filter rows with "0" in the "Cabin" column and save to a new CSV file
-def preprocess_cabin_0(df):
-    new_df = df[df['Cabin'] == '0']
-    new_file = "data/cabin/filtered_cabin_0.csv"
-    new_df.to_csv(new_file, index=False)
-# Defines a function that filters out all rows that the alphabet is not followed by a numerical value and saves the outlier data to a new CSV file
-def preprocess_cabin_exclude(df):
-    # Filter rows in the "Cabin" column that have alphabets followed by a numerical value
-    filtered_df = df[df['Cabin'].str.contains(r'[A-Z][A-Z\W\s]|[^0-9]$')]
-    # Save the filtered DataFrame to a new CSV file
-    filtered_file = "data/cabin/cabin_excluded.csv"    
-    filtered_df.to_csv(filtered_file, index=False)
+# Choose the column for processing
+exclude_decimal_column = "Age"  # Replace with the actual column name
+column_name = "Age"  # Replace with the actual column name
 
-# Defines a function that filters out all rows that the alphabet is not followed by a numerical value and saves to a new CSV file
-def preprocess_cabin_cleaned(df):
-    # Filter rows in the "Cabin" column based on your criteria
-    filtered_df = df[~df['Cabin'].str.contains(r'[A-Z][A-Z\W\s]|[^0-9]$')]
-    # Save the filtered DataFrame to a new CSV file
-    filtered_file = "data/cabin/cleaned_cabin.csv"
-    filtered_df.to_csv(filtered_file, index=False)
+# Filter rows with no decimal points in the 'Age' column
+filtered_df_age = df[df[column_name] % 1 == 0]
 
-# Call the preprocessing function to filter and save rows
-preprocess_cabin_0(df)
-preprocess_cabin_exclude(df)
-preprocess_cabin_cleaned(df)
+# Add a new column 'Gender' and convert 'Male' and 'Female' to binary 1 or 0
+df['Gender'] = df['Gender'].map({'Male': 1, 'Female': 0})
 
+# Print the rows with no decimal points in the 'Age' column
+print("Rows with no decimal points in the 'Age' column:")
+print(filtered_df_age)
+
+# Choose columns 'Height' and 'Weight' for rounding to 1 decimal place
+columns_to_round = ['Height', 'Weight']
+
+# Round selected columns to 1 decimal place
+df[columns_to_round] = round_columns_to_one_decimal(df[columns_to_round], columns_to_round)
+
+# Add a new column 'Gender' and convert 'Male' and 'Female' to binary 1 or 0
+df['fam_hist_over-wt'] = df['fam_hist_over-wt'].map({'yes': 1, 'no': 0})
+
+df['SMOKE'] = df['SMOKE'].map({'yes': 1, 'no': 0})
+
+df['FAVC'] = df['FAVC'].map({'yes': 1, 'no': 0})
+
+df['SCC'] = df['SCC'].map({'yes': 1, 'no': 0})
+
+# Choose columns 'FCVC' and 'NCP' for rounding to WHOLE NUMBER
+FCVC_round = ['FCVC', 'NCP', 'CH2O', 'FAF', 'TUE']
+
+# Round selected columns to 1 decimal place
+df[FCVC_round] = round_columns_to_whole(df[FCVC_round], FCVC_round)
+
+# Add a new column 'Gender' and convert 'Male' and 'Female' to binary 1 or 0
+df['CAEC'] = df['CAEC'].map({'Frequently': 1, 'Sometimes': 0, 'no': -1})
+df['CALC'] = df['CALC'].map({'Frequently': 1, 'Sometimes': 0, 'no': -1})
+df['Obesity_Level'] = df['Obesity_Level'].map({'Obesity_Type_I':3, 'Obesity_Type_II':4, 'Obesity_Type_III':5,'Overweight_Level_II':2, 'Overweight_Level_I': 1, 'Normal_Weight': 0, 'Insufficient_Weight': -1})
+# Save the modified columns to a single CSV file
+output_modified_file = 'modified_data.csv'
+df.loc[df[column_name] % 1 == 0, ['Patient ID','Gender','Age', 'Height', 'Weight', 'fam_hist_over-wt','FAVC','FCVC','NCP','CAEC','SMOKE','CH2O','SCC','FAF','TUE','CALC','MTRANS','Obesity_Level']].to_csv(output_modified_file, index=False)
+
+# Print the modified DataFrame
+print("Modified Data:")
+print(df.loc[df[column_name] % 1 == 0, ['Patient ID','Gender','Age', 'Height', 'Weight','fam_hist_over-wt','FAVC','FCVC','NCP','CAEC','SMOKE','CH2O','SCC','FAF','TUE','CALC','MTRANS','Obesity_Level']])
