@@ -53,17 +53,24 @@ def KNearestNeigbour(predictionData, trainData, testData, parameters, config):
     y = list(trainData[parameters['Prediction Element']])
     knn_model = KNeighborsRegressor(n_neighbors = K)
     knn_model.fit(X, y)
-    knn_model.feature_names_in_ = parameters
+
     # Prediction
-    predictions = knn_model.predict(testData[parameters['Input Parameters']].values).round(decimals=0).astype(int)
-    predictionData = testData.copy()
-    predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
-    predictionData.drop('Abnormal', axis='columns', inplace=True)
+    predictions = knn_model.predict(testData[parameters['Input Parameters']].values)#.round(decimals=0).astype(int)
+    # predictionData = testData.copy()
+    # predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
+    # predictionData.drop('Abnormal', axis='columns', inplace=True)
+
+    predictions_rounded = numpy.round(predictions).astype(int)
+    
     # Metrics
     # print("KNN Metrics")
-    # Metrics(testData[parameters['Prediction Element']], predictionData[parameters['Prediction Element']])
 
-    return 'K-Nearest Neighbour', predictionData
+
+    metrics = Metrics(testData[parameters['Prediction Element']].values, predictions_rounded)#predictionData[parameters['Prediction Element']])
+
+    VisualizeMetrics(metrics)
+
+    return 'K-Nearest Neighbour', predictionData, metrics
 
 def ConfusionMatrix(trueValue, predictedValue, predictionParameter):
     label   = [predictionParameter['Prediction Element'], 'Not ' + predictionParameter['Prediction Element']]
