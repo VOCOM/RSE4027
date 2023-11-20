@@ -18,18 +18,37 @@ import numpy
 import pandas
 
 # Machine Learning Imports
-from sklearn import linear_model
+from sklearn.linear_model import LogisticRegression as LogisticRegressor
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.ensemble import RandomForestClassifier
 
 # Graphing Import
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
 
+def RandomForest(predictionData, trainData, testData, config):
+    # Reset Prediction dataframe
+    predictionData.drop(predictionData.index, inplace=True)
+    # Random Forest
+    clf = RandomForestClassifier(n_estimators=config['Estimators'])
+    X = trainData[config['Parameters']['Input Parameters']]
+    y = list(trainData[config['Parameters']['Prediction Element']])
+    clf = clf.fit(X,y)
+    # Prediction
+    predictions = clf.predict(testData[config['Parameters']['Input Parameters']])
+    predictionData = testData.copy()
+    predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
+    predictionData.drop('Abnormal', axis='columns', inplace=True)
+    # Metrics
+    metrics = Metrics(predictionData, predictions, config)
+    return 'Random Forest', predictionData, metrics
+
 def LogisticRegression(predictionData, trainData, testData, config):
     # Reset Prediction dataframe
     predictionData.drop(predictionData.index, inplace=True)
     # Logistic Regression
-    regr = linear_model.LogisticRegression(max_iter=config['Max Iteration'])
+    multiCore = -1
+    regr = LogisticRegressor(max_iter=config['Max Iteration'], n_jobs=multiCore)
     X = trainData[config['Parameters']['Input Parameters']]
     y = list(trainData[config['Parameters']['Prediction Element']])
     regr = regr.fit(X,y)
@@ -38,7 +57,6 @@ def LogisticRegression(predictionData, trainData, testData, config):
     predictionData = testData.copy()
     predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
     predictionData.drop('Abnormal', axis='columns', inplace=True)
-    predictionData.sort_values('Prediction', inplace=True)
     # Metrics
     metrics = Metrics(predictionData, predictions, config)
     return 'Logistic Regression', predictionData, metrics
@@ -84,7 +102,7 @@ def PredictionResults(lastAppliedModel, predictionData, metrics, config):
         '4) Metrics',
         "E) Exit"
     ]
-    if not len(predictionData):
+    if lastAppliedModel == None:
         print("No data detected! Apply a model first.")
         return
     
@@ -105,7 +123,7 @@ def PredictionResults(lastAppliedModel, predictionData, metrics, config):
             ConfusionMatrix(predictionData, config)
         if userInput == "4":
             print(lastAppliedModel, 'Metrics')
-            VisualizeMetrics(metrics, config)
+            VisualizeMetrics(lastAppliedModel, metrics, config)
         print("Model Used:", lastAppliedModel)
         for option in options:
             print(option)

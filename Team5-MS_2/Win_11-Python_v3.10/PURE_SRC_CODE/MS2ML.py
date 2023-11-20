@@ -1,10 +1,11 @@
 import os
 import pandas
 from setup import Setup, MLOperations
-from ml import LogisticRegression, KNearestNeigbour, PredictionResults
+from ml import LogisticRegression, KNearestNeigbour, RandomForest, PredictionResults
 from eda import Clean
 
-lastAppliedModel = ''
+lastAppliedModel = None
+metrics = None
 
 rawTrainData, rawTestData, config = Setup()
 
@@ -55,5 +56,7 @@ while userInput != "E":
     if userInput == "5":
         lastAppliedModel, predictionData, metrics = KNearestNeigbour(predictionData, cleanTrainData, cleanTestData, config)
     if userInput == "6":
+        lastAppliedModel, predictionData, metrics = RandomForest(predictionData, cleanTrainData, cleanTestData, config)
+    if userInput == "7":
         PredictionResults(lastAppliedModel, predictionData, metrics, config)
     userInput = MLOperations()

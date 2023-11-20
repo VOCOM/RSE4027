@@ -12,6 +12,7 @@ import numpy
 
 # Metrics Import
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score, accuracy_score, matthews_corrcoef, mean_absolute_error, mean_squared_error
+from sklearn.metrics import precision_recall_fscore_support as score
 
 # Graphing Import
 import matplotlib.pyplot as plt
@@ -57,7 +58,7 @@ def Metrics(predictionData, predictionValue, config):
     }
     return metrics
 
-def VisualizeMetrics(metrics, config):
+def VisualizeMetrics(lastAppliedModel, metrics, config):
     metricLabel = []
     metricCount = []
     if config['Multi-Class']:
@@ -97,24 +98,25 @@ def VisualizeMetrics(metrics, config):
     scoreCount.append(metrics['MAE'])
     scoreCount.append(metrics['MSE'])
     scoreCount.append(metrics['RMSE'])
-    print("Accuracy:  {:.5f}".format(metrics['CA']))
-    print("AUC:  {:.5f}".format(metrics['AUC']))
-    print("MCC:  {:.5f}".format(metrics['MCC']))
-    print("MAE:  {:.5f}".format(metrics['MAE']))
-    print("MSE:  {:.5f}".format(metrics['MSE']))
-    print("RMSE: {:.5f}".format(metrics['RMSE']))
+    print("Accuracy: {:.5f}".format(metrics['CA']))
+    print("AUC:      {:.5f}".format(metrics['AUC']))
+    print("MCC:      {:.5f}".format(metrics['MCC']))
+    print("MAE:      {:.5f}".format(metrics['MAE']))
+    print("MSE:      {:.5f}".format(metrics['MSE']))
+    print("RMSE:     {:.5f}".format(metrics['RMSE']))
     print()
     
     scoreFig, scoreAx = plt.subplots()
     scoreBar = scoreAx.bar(scoreLabel, scoreCount)
     scoreAx.bar_label(scoreBar, fmt='{:.2f}')
+    scoreFig.suptitle(lastAppliedModel)
 
     if config['Multi-Class']:
         metricFig, metricAx = plt.subplots(1,len(config['Classifications']), sharey=True)
         i = 0
         j = 0
         while j < len(config['Classifications']):
-            metricBar = metricAx[j].bar(metricLabel[i:i+2], metricCount[i:i+2])
+            metricBar = metricAx[j].bar(metricLabel[i:i+3], metricCount[i:i+3])
             metricAx[j].set_title(list(config['Classifications'].keys())[j])
             metricAx[j].bar_label(metricBar, fmt='{:.2f}')
             i += 3
@@ -123,5 +125,6 @@ def VisualizeMetrics(metrics, config):
         metricFig, metricAx = plt.subplots()
         metricBar = metricAx.bar(metricLabel, metricCount)
         metricAx.bar_label(metricBar, fmt='{:.2f}')
+    metricFig.suptitle(lastAppliedModel)
     plt.show()
     
