@@ -186,6 +186,7 @@ def ObeseProbability(data):
             "16) Mode of Transport vs Obese",
             "E) Return to Previous Menu"
         ]
+        print("Number of obese vs total entries:", (data['Obese'] == 1).sum() , "/", len(data.index))
         for plot in plotList:
             print(plot)
         userInput = input("Plot:").capitalize()
