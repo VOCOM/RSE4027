@@ -80,11 +80,14 @@ def KNearestNeigbour(predictionData, trainData, testData, config):
     # print("KNN Metrics")
     # Metrics(testData[parameters['Prediction Element']], predictionData[parameters['Prediction Element']])
 
-    return 'K-Nearest Neighbour', predictionData, metrics
+    return 'K-Nearest Neighbour', predictionData
 
-def ConfusionMatrix(trueValue, predictedValue, predictionParameter):
-    label   = [predictionParameter['Prediction Element'], 'Not ' + predictionParameter['Prediction Element']]
-    cm = confusion_matrix(trueValue, predictedValue)
+def ConfusionMatrix(predictionData, config):
+    if config['Multi-Class']:
+        label =  config['Classifications']
+    else:
+        label = [config['Parameters']['Prediction Element'], 'Not ' + config['Parameters']['Prediction Element']]
+    cm = confusion_matrix(predictionData[config['Parameters']['Prediction Element']], predictionData['Prediction'])
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label)
     disp.plot()
     plt.show()
