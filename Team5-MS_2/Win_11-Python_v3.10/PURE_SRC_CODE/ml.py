@@ -10,6 +10,7 @@ import os
 
 # Utility Import
 from utility import Metrics, VisualizeMetrics
+from setup import JOperations_s
 
 # Math Import
 import numpy
@@ -100,6 +101,7 @@ def PredictionResults(lastAppliedModel, predictionData, metrics, config):
     clearCMD = config['Clear Command']
     userInput = ''
     options = [
+        " ",
         '1) ' + config['Parameters']['Prediction Element'],
         '2) Non - ' + config['Parameters']['Prediction Element'],
         '3) Confusion Matrix',
@@ -132,6 +134,8 @@ def PredictionResults(lastAppliedModel, predictionData, metrics, config):
         for option in options:
             print(option)
         userInput = input("Predictions to list:").capitalize()
+    print()
+    JOperations_s()
     os.system(clearCMD)
 
 def PredictionPlots(data):

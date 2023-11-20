@@ -1,7 +1,7 @@
 import os
 import pandas
-from setup import Setup, MLOperations
-from ml import LogisticRegression, KNearestNeigbour, RandomForest
+from setup import Setup, MLOperations, JOperations_s, JOperations_e
+from ml import LogisticRegression, KNearestNeigbour, PredictionResults, RandomForest
 from eda import Clean
 from utility import SaveSetup, UpdateSaveData, SaveData, SaveResults
 
@@ -48,6 +48,8 @@ cleanTestData = Clean(rawTestData.copy(), config)
 
 predictionData = pandas.DataFrame(columns=cleanTestData.columns)
 
+JOperations_s()
+
 while userInput != "E":
     os.system(clearCMD)
     if userInput == "2":
@@ -68,4 +70,5 @@ while userInput != "E":
         SaveResults(predictionData, config)
     if userInput == "4" or userInput == "5" or userInput == "6":
         saveData = UpdateSaveData(lastAppliedModel, saveData, metrics, config)
+    userInput = JOperations_e()
     userInput = MLOperations()

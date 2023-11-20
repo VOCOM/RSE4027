@@ -1,4 +1,4 @@
-Clear Command: "cls"
+Clear Command: "clear"
 Unified dataset: "True"
 SplitRatio (Train/Test): "60/40"
 

@@ -111,13 +111,17 @@ def VisualizeMetrics(lastAppliedModel, metrics, config):
     scoreAx.bar_label(scoreBar, fmt='{:.2f}')
     scoreFig.suptitle(lastAppliedModel)
 
+    params = {
+    'fontsize': 5
+    }
+
     if config['Multi-Class']:
         metricFig, metricAx = plt.subplots(1,len(config['Classifications']), sharey=True)
         i = 0
         j = 0
         while j < len(config['Classifications']):
             metricBar = metricAx[j].bar(metricLabel[i:i+3], metricCount[i:i+3])
-            metricAx[j].set_title(list(config['Classifications'].keys())[j])
+            metricAx[j].set_title(list(config['Classifications'].keys())[j], fontdict = params)
             metricAx[j].bar_label(metricBar, fmt='{:.2f}')
             i += 3
             j += 1

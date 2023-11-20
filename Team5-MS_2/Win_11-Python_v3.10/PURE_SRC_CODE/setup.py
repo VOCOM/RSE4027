@@ -99,6 +99,7 @@ def Setup(configOnly = False):
 def EDAOperations():
     userInput = ''
     operationList = [
+        " ",
         "1) Clear Screen",
         "2) Print original data table",
         "3) Print cleaned data table",
@@ -112,6 +113,27 @@ def EDAOperations():
 
     for operation in operationList:
         print(operation)
+    userInput = input("Operation:").capitalize()
+
+    return userInput
+
+def JOperations_s():
+    userInput = ''
+    operationList = [
+        "1) Clear Screen",
+        "2) Print extracted data table",
+        "3) Print extracted test table",
+        "4) Logistic Regression",
+        "5) K-Nearest Neighbour",
+        "6) Random Forest",
+        "7) Prediction Results",
+        "E) Exit Program"
+    ]
+
+    for operation in operationList:
+        print(operation)
+    
+def JOperations_e():
     userInput = input("Operation:").capitalize()
 
     return userInput
