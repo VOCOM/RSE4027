@@ -184,7 +184,7 @@ def ObeseProbability(data):
             "14) TUE vs Obese",
             "15) CALC vs Obese",
             "16) Mode of Transport vs Obese",
-            "E) Exit Program"
+            "E) Return to Previous Menu"
         ]
         for plot in plotList:
             print(plot)
