@@ -34,14 +34,14 @@ exclude_decimal_column = "Age"  # Replace with the actual column name
 column_name = "Age"  # Replace with the actual column name
 
 # Filter rows with no decimal points in the 'Age' column
-filtered_df_age = df[df[column_name] % 1 == 0]
+# filtered_df_age = df[df[column_name] % 1 == 0]
 
 # Add a new column 'Gender' and convert 'Male' and 'Female' to binary 1 or 0
 df['Gender'] = df['Gender'].map({'Male': 1, 'Female': 0})
 
 # Print the rows with no decimal points in the 'Age' column
-print("Rows with no decimal points in the 'Age' column:")
-print(filtered_df_age)
+#print("Rows with no decimal points in the 'Age' column:")
+#print(filtered_df_age)
 
 # Choose columns 'Height' and 'Weight' for rounding to 1 decimal place
 columns_to_round = ['Height', 'Weight']
@@ -59,10 +59,10 @@ df['FAVC'] = df['FAVC'].map({'yes': 1, 'no': 0})
 df['SCC'] = df['SCC'].map({'yes': 1, 'no': 0})
 
 # Choose columns 'FCVC' and 'NCP' for rounding to WHOLE NUMBER
-FCVC_round = ['FCVC', 'NCP', 'CH2O', 'FAF', 'TUE']
+ROUNDING_WHOLE = ['Age','FCVC', 'NCP', 'CH2O', 'FAF', 'TUE']
 
 # Round selected columns to 1 decimal place
-df[FCVC_round] = round_columns_to_whole(df[FCVC_round], FCVC_round)
+df[ROUNDING_WHOLE] = round_columns_to_whole(df[ROUNDING_WHOLE], ROUNDING_WHOLE)
 
 # Add a new column 'Gender' and convert 'Male' and 'Female' to binary 1 or 0
 df['CAEC'] = df['CAEC'].map({'Frequently': 1, 'Sometimes': 0, 'no': -1})
