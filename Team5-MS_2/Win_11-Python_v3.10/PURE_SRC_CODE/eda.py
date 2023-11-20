@@ -14,6 +14,7 @@ import seaborn as sns
 import os
 import numpy as np
 
+clearCMD = 'cls'
 
 def Find(data, category):
     distributionTable = {}
@@ -160,9 +161,12 @@ def CorrelationMatrix(data):
 
 def ObeseProbability(data):
     userInput = ''
+    category = ''
     tmpBins = ''
+    binList = ['Age','H','W','FCVC','NCP','CH2O','FAF','TUE']
+    ynList = ['FAVC','SMOKE','SCC']
     while userInput != 'E':
-        os.system("cls")
+        # os.system("cls")
         plotList = [
             "1) Gender vs Obese",
             "2) Age vs Obese",
@@ -186,7 +190,7 @@ def ObeseProbability(data):
             print(plot)
         userInput = input("Plot:").capitalize()
 
-        if userInput == "1":
+        if userInput == "1":          
             obeseFemale = data[(data['Obese'] == 1) & (data['Female'] == 1)]['Female'].sum()
             obeseMale = data[(data['Obese'] == 1) & (data['Male'] == 1)]['Male'].sum()
             totalFemale = data['Female'].sum()
@@ -207,97 +211,133 @@ def ObeseProbability(data):
         if userInput == "2":
             category = 'Age'
             tmpBins = 'Age Bins'
-            # ageMin = data['Age'].min()
-            # ageMax = data['Age'].max()
-            # ageBins = np.linspace(ageMin, ageMax, num=6)
-            # data['Age Bins'] = pandas.cut(data['Age'], bins=ageBins, include_lowest=True)
-            # ageBinsEncoded = pandas.get_dummies(data['Age Bins'], prefix='Age')
-            # data = pandas.concat([data, ageBinsEncoded], axis=1)
-            # obeseRates = data.groupby('Age Bins')['Obese'].mean()
-            # matplotlib.pyplot.figure(figsize=(8, 6))
-            # obeseRates.plot(kind='bar', color='skyblue')
-            matplotlib.pyplot.title('Obese Probability by Age Group')
-            matplotlib.pyplot.xlabel('Age Group')
-            # matplotlib.pyplot.ylabel('Obese Probability')
-            # matplotlib.pyplot.xticks(rotation=45)  # Rotate x-axis labels for better readability
-            # matplotlib.pyplot.grid(axis='y', linestyle='--', alpha=0.7)
-            # matplotlib.pyplot.tight_layout()
-            # matplotlib.pyplot.show()
         if userInput == "3":
             category = 'H'
-            tmpBins = 'H Bins'
-            # heightMin = data['H'].min()
-            # heightMax = data['H'].max()
-            # heightBins = np.linspace(heightMin, heightMax, num=6)
-            # data['H Bins'] = pandas.cut(data['H'], bins=heightBins, include_lowest=True)
-            # heightBinsEncoded = pandas.get_dummies(data['H Bins'], prefix='H')
-            # data = pandas.concat([data, heightBinsEncoded], axis=1)
-            # obeseRates = data.groupby('H Bins')['Obese'].mean()
-            # matplotlib.pyplot.figure(figsize=(8, 6))
-            # obeseRates.plot(kind='bar', color='skyblue')
-            matplotlib.pyplot.title('Obese Probability by Height Group')
-            matplotlib.pyplot.xlabel('Height Group')
-            # matplotlib.pyplot.ylabel('Obese Probability')
-            # matplotlib.pyplot.xticks(rotation=45)  # Rotate x-axis labels for better readability
-            # matplotlib.pyplot.grid(axis='y', linestyle='--', alpha=0.7)
-            # matplotlib.pyplot.tight_layout()
-            # matplotlib.pyplot.show()
+            tmpBins = 'Height Bins'
+        if userInput == "4":
+            category = 'W'
+            tmpBins = 'Weight Bins'
         if userInput == "5":
-            obeseNoGr = ((data['Obese'] == 1) & (data['GR'] == 0)).sum()
-            obeseHasGr = data[(data['Obese'] == 1) & (data['GR'] == 1)]['GR'].sum()
-            totalNoGr = (data['GR'] == 0).sum()
-            totalHasGr = (data['GR'] == 1).sum()
-            obesePctgNoGr = obeseNoGr / totalNoGr if totalNoGr != 0 else 0
-            obesePctgHasGr = obeseHasGr / totalHasGr if totalHasGr != 0 else 0
+            obeseGrNo = ((data['Obese'] == 1) & (data['GR'] == 0)).sum()
+            obeseGrYes = data[(data['Obese'] == 1) & (data['GR'] == 1)]['GR'].sum()
+            totalGrNo = (data['GR'] == 0).sum()
+            totalGrYes = (data['GR'] == 1).sum()
+            obesePctgGrNo = obeseGrNo / totalGrNo if totalGrNo != 0 else 0
+            obesePctgGrYes = obeseGrYes / totalGrYes if totalGrYes != 0 else 0
             tmpdata = {
-                'No OW fam hist': [obesePctgNoGr],
-                'Has OW fam hist': [obesePctgHasGr]
+                'No': [obesePctgGrNo],
+                'Yes': [obesePctgGrYes]
             }
             tmpdf = pandas.DataFrame(tmpdata)
-            plt = tmpdf[['No OW fam hist','Has OW fam hist']].plot(kind='bar',edgecolor='white')
+            plt = tmpdf[['No','Yes']].plot(kind='bar',edgecolor='white')
             plt.set_xticks([])
             plt.set_xticklabels([])
-            plt.set_xlabel('History')
+            plt.set_xlabel('Family with Overweight History')
             plt.set_ylabel('Obese Probability')
             matplotlib.pyplot.show()
         if userInput == "6":
-            obeseNoFavc = ((data['Obese'] == 1) & (data['FAVC'] == 0)).sum()
-            obeseHasFavc = data[(data['Obese'] == 1) & (data['FAVC'] == 1)]['FAVC'].sum()
-            totalNoFavc = (data['FAVC'] == 0).sum()
-            totalHasFavc = (data['FAVC'] == 1).sum()
-            obesePctgNoFavc = obeseNoFavc / totalNoFavc if totalNoFavc != 0 else 0
-            obesePctgHasFavc = obeseHasFavc / totalHasFavc if totalHasFavc != 0 else 0
-            tmpdata = {
-                'Dont freq consumes high cal': [obesePctgNoFavc],
-                'Freq consumes high cal': [obesePctgHasFavc]
-            }
-            tmpdf = pandas.DataFrame(tmpdata)
-            plt = tmpdf[['Dont freq consumes high cal','Freq consumes high cal']].plot(kind='bar',edgecolor='white')
-            plt.set_xticks([])
-            plt.set_xticklabels([])
-            plt.set_xlabel('High Calorie Consumption')
-            plt.set_ylabel('Obese Probability')
-            matplotlib.pyplot.show()
+            category = 'FAVC'
+            xlabel = 'High Calorie Consumption'
+        if userInput == "7":
+            category = 'FCVC'
+            tmpBins = 'FCVC Bins'
+        if userInput == "8":
+            category = 'NCP'
+            tmpBins = 'NCP Bins'
         if userInput == "9":
-            obeseNoGr = ((data['Obese'] == 1) & (data['GR'] == 0)).sum()
-            obeseHasGr = data[(data['Obese'] == 1) & (data['GR'] == 1)]['GR'].sum()
-            totalNoGr = (data['GR'] == 0).sum()
-            totalHasGr = (data['GR'] == 1).sum()
-            obesePctgNoGr = obeseNoGr / totalNoGr if totalNoGr != 0 else 0
-            obesePctgHasGr = obeseHasGr / totalHasGr if totalHasGr != 0 else 0
+            obeseCaecNo = ((data['Obese'] == 1) & (data['CAEC_no'] == 1)).sum()
+            obeseCaecSometimes = ((data['Obese'] == 1) & (data['CAEC_Sometimes'] == 1)).sum()
+            obeseCaecFrequently = ((data['Obese'] == 1) & (data['CAEC_Frequently'] == 1)).sum()
+            obeseCaecAlways = ((data['Obese'] == 1) & (data['CAEC_Always'] == 1)).sum()
+            totalCaecNo = (data['CAEC_no'] == 1).sum()
+            totalCaecSometimes = (data['CAEC_Sometimes'] == 1).sum()
+            totalCaecFrequently = (data['CAEC_Frequently'] == 1).sum()
+            totalCaecAlways = (data['CAEC_Always'] == 1).sum()
+            obesePctgCaecNo = obeseCaecNo / totalCaecNo if totalCaecNo != 0 else 0
+            obesePctgCaecSometimes = obeseCaecSometimes / totalCaecSometimes if totalCaecSometimes != 0 else 0
+            obesePctgCaecFrequently = obeseCaecFrequently / totalCaecFrequently if totalCaecFrequently != 0 else 0
+            obesePctgCaecAlways = obeseCaecAlways / totalCaecAlways if totalCaecAlways != 0 else 0
             tmpdata = {
-                'No OW fam hist': [obesePctgNoGr],
-                'Has OW fam hist': [obesePctgHasGr]
+                'No': [obesePctgCaecNo],
+                'Sometimes': [obesePctgCaecSometimes],
+                'Frequently': [obesePctgCaecFrequently],
+                'Always': [obesePctgCaecAlways]
             }
             tmpdf = pandas.DataFrame(tmpdata)
-            plt = tmpdf[['No OW fam hist','Has OW fam hist']].plot(kind='bar',edgecolor='white')
+            plt = tmpdf[['No','Sometimes','Frequently','Always']].plot(kind='bar',edgecolor='white')
             plt.set_xticks([])
             plt.set_xticklabels([])
-            plt.set_xlabel('History')
+            plt.set_xlabel('Patient consumes additional food between meals')
             plt.set_ylabel('Obese Probability')
             matplotlib.pyplot.show()
-
-        if userInput == "2" or userInput == "3":
+        if userInput == "10":
+            category = 'SMOKE'
+            xlabel = 'Smoke'
+        if userInput == "11":
+            category = 'CH2O'
+            tmpBins = 'CH2O Bins'
+        if userInput == "12":
+            category = 'SCC'
+            xlabel = 'Keeps Track of Personal Calorie Intake'
+        if userInput == "13":
+            category = 'FAF'
+            tmpBins = 'FAF Bins'
+        if userInput == "14":
+            category = 'TUE'
+            tmpBins = 'TUE Bins'
+        if userInput == "15":
+            obeseCalcNo = ((data['Obese'] == 1) & (data['CALC_no'] == 1)).sum()
+            obeseCalcSometimes = ((data['Obese'] == 1) & (data['CALC_Sometimes'] == 1)).sum()
+            obeseCalcFrequently = ((data['Obese'] == 1) & (data['CALC_Frequently'] == 1)).sum()
+            totalCalcNo = (data['CALC_no'] == 1).sum()
+            totalCalcSometimes = (data['CALC_Sometimes'] == 1).sum()
+            totalCalcFrequently = (data['CALC_Frequently'] == 1).sum()
+            obesePctgCalcNo = obeseCalcNo / totalCalcNo if totalCalcNo != 0 else 0
+            obesePctgCalcSometimes = obeseCalcSometimes / totalCalcSometimes if totalCalcSometimes != 0 else 0
+            obesePctgCalcFrequently = obeseCalcFrequently / totalCalcFrequently if totalCalcFrequently != 0 else 0
+            tmpdata = {
+                'No': [obesePctgCalcNo],
+                'Sometimes': [obesePctgCalcSometimes],
+                'Frequently': [obesePctgCalcFrequently]
+            }
+            tmpdf = pandas.DataFrame(tmpdata)
+            plt = tmpdf[['No','Sometimes','Frequently']].plot(kind='bar',edgecolor='white')
+            plt.set_xticks([])
+            plt.set_xticklabels([])
+            plt.set_xlabel('Patient consumes alcohol')
+            plt.set_ylabel('Obese Probability')
+            matplotlib.pyplot.show()
+        if userInput == "16":
+            obeseMtransAutomobile = ((data['Obese'] == 1) & (data['Automobile'] == 1)).sum()
+            obeseMtransMotorbike = ((data['Obese'] == 1) & (data['Motorbike'] == 1)).sum()
+            obeseMtransPublic = ((data['Obese'] == 1) & (data['Public_Transportation'] == 1)).sum()
+            obeseMtransBike = ((data['Obese'] == 1) & (data['Bike'] == 1)).sum()
+            obeseMtransWalk = ((data['Obese'] == 1) & (data['Walking'] == 1)).sum()
+            totalMtransAutomobile = (data['Automobile'] == 1).sum()
+            totalMtransMotorbike = (data['Motorbike'] == 1).sum()
+            totalMtransPublic = (data['Public_Transportation'] == 1).sum()
+            totalMtransBike = (data['Bike'] == 1).sum()
+            totalMtransWalk = (data['Walking'] == 1).sum()
+            obesePctgMtransAutomobile = obeseMtransAutomobile / totalMtransAutomobile if totalMtransAutomobile != 0 else 0
+            obesePctgMtransMotorbike = obeseMtransMotorbike / totalMtransMotorbike if totalMtransMotorbike != 0 else 0
+            obesePctgMtransPublic = obeseMtransPublic / totalMtransPublic if totalMtransPublic != 0 else 0
+            obesePctgMtransBike = obeseMtransBike / totalMtransBike if totalMtransBike != 0 else 0
+            obesePctgMtransWalk = obeseMtransWalk / totalMtransWalk if totalMtransWalk != 0 else 0
+            tmpdata = {
+                'Automobile': [obesePctgMtransAutomobile],
+                'Motorbike': [obesePctgMtransMotorbike],
+                'Public Transportation': [obesePctgMtransPublic],
+                'Bike': [obesePctgMtransBike],
+                'Walking': [obesePctgMtransWalk]
+            }
+            tmpdf = pandas.DataFrame(tmpdata)
+            plt = tmpdf[['Automobile','Motorbike','Public Transportation','Bike','Walking']].plot(kind='bar',edgecolor='white')
+            plt.set_xticks([])
+            plt.set_xticklabels([])
+            plt.set_xlabel('Patient\'s Mode of Travelling')
+            plt.set_ylabel('Obese Probability')
+            matplotlib.pyplot.show()
+        if category in binList:
             categoryMin = data[category].min()
             categoryMax = data[category].max()
             categoryBins = np.linspace(categoryMin, categoryMax, num=6)
@@ -312,4 +352,25 @@ def ObeseProbability(data):
             matplotlib.pyplot.grid(axis='y', linestyle='--', alpha=0.7)
             matplotlib.pyplot.tight_layout()
             matplotlib.pyplot.show()
+            category = ''
+        if category in ynList:
+            obeseCategoryNo = ((data['Obese'] == 1) & (data[category] == 0)).sum()
+            obeseCategoryYes = data[(data['Obese'] == 1) & (data[category] == 1)][category].sum()
+            totalCategoryNo = (data[category] == 0).sum()
+            totalCategoryYes = (data[category] == 1).sum()
+            obesePctgCategoryNo = obeseCategoryNo / totalCategoryNo if totalCategoryNo != 0 else 0
+            obesePctgCategoryYes = obeseCategoryYes / totalCategoryYes if totalCategoryYes != 0 else 0
+            tmpdata = {
+                'No': [obesePctgCategoryNo],
+                'Yes': [obesePctgCategoryYes]
+            }
+            tmpdf = pandas.DataFrame(tmpdata)
+            plt = tmpdf[['No','Yes']].plot(kind='bar',edgecolor='white')
+            plt.set_xticks([])
+            plt.set_xticklabels([])
+            plt.set_xlabel(xlabel)
+            plt.set_ylabel('Obese Probability')
+            matplotlib.pyplot.show()
+            category = ''
+        os.system(clearCMD)
         
