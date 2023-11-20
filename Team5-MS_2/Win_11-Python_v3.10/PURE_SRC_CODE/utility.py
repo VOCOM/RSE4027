@@ -10,6 +10,9 @@ import numpy
 # Metrics Import
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score, accuracy_score, matthews_corrcoef, mean_absolute_error, mean_squared_error
 
+# Graphing Import
+import matplotlib.pyplot as plt
+
 def Str2NaN(value):
     if value == "0":
         value = numpy.nan
@@ -48,6 +51,13 @@ def Metrics(testValue, predictionValue, predictedProbability = 0, isMultiClass =
     return metrics
 
 def VisualizeMetrics(metrics):
+    fig, ax = plt.subplots()
+    label = metrics.keys()
+    count = metrics.values()
+    bar = ax.bar(label, count)
+    ax.bar_label(bar, fmt='{:.2f}')
+    plt.show()
+
     print("Accuracy:  {:.5f}".format(metrics['CA']))
     print("Precision: {:.5f}".format(metrics['Precision']))
     print("Recall:    {:.5f}".format(metrics['Recall']))
