@@ -7,6 +7,8 @@ Testing dataset: "..\OTH_DATA\MS_2_Scenario_data.csv"
 
 Multi-Class: "True"
 Max Iteration: "20000"
-
-K-Means: "80"
+K-Means: "200"
 Estimators: "100"
+
+Save Location: "../ML_DATA/Metrics.csv"
+Results Save Location: "../OTH_DATA/Results.csv"

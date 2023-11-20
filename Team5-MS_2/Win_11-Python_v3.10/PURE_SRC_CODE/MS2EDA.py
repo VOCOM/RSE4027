@@ -4,7 +4,7 @@
 ##
 
 import os
-from setup import Setup, EDAOperations, Plots
+from setup import Setup, EDAOperations
 from eda import Clean, DropAbnormalities, NaEntries, CorrelationMatrix, ObeseProbability
 
 clearCMD = 'cls'
@@ -32,7 +32,7 @@ config.update({'Binary' : binary})
 cleanTrainData = Clean(rawTrainData.copy(), config)
 cleanTestData = Clean(rawTestData.copy(), config)
 
-userInput = EDAOperations()
+userInput = None
 
 while userInput != "E":
     os.system(clearCMD)
