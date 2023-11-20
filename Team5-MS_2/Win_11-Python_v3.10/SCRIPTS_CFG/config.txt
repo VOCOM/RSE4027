@@ -5,11 +5,8 @@ SplitRatio (Train/Test): "60/40"
 Training dataset: "..\OTH_DATA\MS_2_Scenario_data.csv"
 Testing dataset: "..\OTH_DATA\MS_2_Scenario_data.csv"
 
-Multi-Class: "False"
+Multi-Class: "True"
 Max Iteration: "20000"
-<<<<<<< Updated upstream
-K-Means: "200
-=======
+
 K-Means: "90"
 Estimators: "100"
->>>>>>> Stashed changes

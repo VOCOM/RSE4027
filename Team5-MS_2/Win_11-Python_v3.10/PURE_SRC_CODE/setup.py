@@ -30,6 +30,7 @@ def Setup():
     maxIterations = 0
     kMeans = 0
     mClass = False
+    estimators = 0
     for line in configFile.readlines():
         if "Clear Command: " in line:
             clearCMD = line.strip().split("\"")[1]
@@ -49,6 +50,8 @@ def Setup():
             kMeans = int(line.strip().split("\"")[1])
         if "Multi-Class: " in line:
             mClass = bool(line.strip().split("\"")[1].lower() == "true")
+        if "Estimators: " in line:
+            estimators = int(line.strip().split("\"")[1])
 
     trainData = pandas.read_csv(trainingDataPath)
     if isUnified:
@@ -75,7 +78,8 @@ def Setup():
         'Split Ratio' : splitRatio,
         'Multi-Class' : mClass,
         'Max Iteration' : maxIterations,
-        'K-Means' : kMeans
+        'K-Means' : kMeans,
+        'Estimators' : estimators
     }
 
     return trainData, testData, config
@@ -88,8 +92,9 @@ def EDAOperations():
         "3) Print cleaned data table",
         "4) Print original test table",
         "5) Print cleaned test table",
-        "6) Data Distributions",
-        "7) EDA Visualization",
+        "6) Print information about missing entries",
+        "7) Correlation Matrix",
+        "8) Specific data column vs obese probability",
         "E) Exit Program"
     ]
 
@@ -107,7 +112,8 @@ def MLOperations():
         "3) Print extracted test table",
         "4) Logistic Regression",
         "5) K-Nearest Neighbour",
-        "6) Prediction Results",
+        "6) Random Forest",
+        "7) Prediction Results",
         "E) Exit Program"
     ]
 

@@ -5,7 +5,7 @@
 
 import os
 from setup import Setup, EDAOperations, Plots
-from eda import Clean, DropAbnormalities, VisualizeEda
+from eda import Clean, DropAbnormalities, NaEntries, CorrelationMatrix, ObeseProbability
 
 clearCMD = 'cls'
 rawTrainData, rawTestData, config = Setup()
@@ -44,6 +44,10 @@ while userInput != "E":
         print(rawTestData.to_string(), '\n')
     if userInput == "5":
         print(cleanTestData.to_string(), '\n')
+    if userInput == "6":
+        NaEntries(cleanTrainData)
     if userInput == "7":
-        VisualizeEda(cleanTestData)
+        CorrelationMatrix(cleanTrainData)
+    if userInput == "8":
+        ObeseProbability(cleanTrainData)
     userInput = EDAOperations()
