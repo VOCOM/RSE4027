@@ -10,6 +10,7 @@ import os
 
 # Utility Import
 from utility import Metrics, VisualizeMetrics
+from setup import JOperations_s
 
 # Math Import
 import numpy
@@ -68,11 +69,15 @@ def KNearestNeigbour(predictionData, trainData, testData, config):
     K = config['K-Means']
     X = trainData[config['Parameters']['Input Parameters']].values
     y = list(trainData[config['Parameters']['Prediction Element']])
-    knn_model = KNeighborsRegressor(n_neighbors = K)
+    knn_model = KNeighborsClassifier(n_neighbors = K)
     knn_model.fit(X, y)
-    knn_model.feature_names_in_ = config['Parameters']
+
+    feature_names = config['Parameters']['Input Parameters']
+    X_test = testData[config['Parameters']['Input Parameters']].values
+
     # Prediction
-    predictions = knn_model.predict(testData[config['Parameters']['Input Parameters']].values).round(decimals=0).astype(int)
+    predictions = knn_model.predict(X_test)#.round(decimals=0).astype(int))
+    # predictionProbabilities = knn_model.predict_proba(X_test)
     predictionData = testData.copy()
     predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
     predictionData.drop('Abnormal', axis='columns', inplace=True)
@@ -96,6 +101,7 @@ def PredictionResults(lastAppliedModel, predictionData, metrics, config):
     clearCMD = config['Clear Command']
     userInput = ''
     options = [
+        " ",
         '1) ' + config['Parameters']['Prediction Element'],
         '2) Non - ' + config['Parameters']['Prediction Element'],
         '3) Confusion Matrix',
@@ -128,6 +134,8 @@ def PredictionResults(lastAppliedModel, predictionData, metrics, config):
         for option in options:
             print(option)
         userInput = input("Predictions to list:").capitalize()
+    print()
+    JOperations_s()
     os.system(clearCMD)
 
 def PredictionPlots(data):

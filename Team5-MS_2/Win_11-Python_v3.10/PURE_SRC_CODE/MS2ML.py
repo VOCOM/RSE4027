@@ -1,11 +1,10 @@
 import os
 import pandas
-from setup import Setup, MLOperations
-from ml import LogisticRegression, KNearestNeigbour, RandomForest, PredictionResults
+from setup import Setup, MLOperations, JOperations_s, JOperations_e
+from ml import LogisticRegression, KNearestNeigbour, PredictionResults
 from eda import Clean
 
-lastAppliedModel = None
-metrics = None
+lastAppliedModel = ''
 
 rawTrainData, rawTestData, config = Setup()
 
@@ -43,6 +42,9 @@ cleanTestData = Clean(rawTestData.copy(), config)
 predictionData = pandas.DataFrame(columns=cleanTestData.columns)
 
 userInput = 0
+
+JOperations_s()
+
 while userInput != "E":
     os.system(clearCMD)
     if userInput == "2":
@@ -56,7 +58,6 @@ while userInput != "E":
     if userInput == "5":
         lastAppliedModel, predictionData, metrics = KNearestNeigbour(predictionData, cleanTrainData, cleanTestData, config)
     if userInput == "6":
-        lastAppliedModel, predictionData, metrics = RandomForest(predictionData, cleanTrainData, cleanTestData, config)
-    if userInput == "7":
         PredictionResults(lastAppliedModel, predictionData, metrics, config)
-    userInput = MLOperations()
+    
+    userInput = JOperations_e()
