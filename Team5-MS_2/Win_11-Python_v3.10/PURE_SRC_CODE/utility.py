@@ -184,5 +184,4 @@ def UpdateSaveData(lastAppliedModel, saveData, metrics, config):
         saveData.insert(len(saveData.columns), 'Precision', 0.0)
         saveData.insert(len(saveData.columns), 'Recall', 0.0)
 
-    print(saveData.to_string(), '\n')
     return saveData
