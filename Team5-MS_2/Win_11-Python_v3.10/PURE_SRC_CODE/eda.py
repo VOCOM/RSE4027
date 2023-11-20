@@ -51,6 +51,7 @@ def Clean(data, config):
 
     # Extra for analysis, could consider dropping H and W after [BMI] 
     data['BMI'] = data['W'] / (data['H'] * data['H'])
+    data['BMI'] = data['BMI'].round(2)
 
     # Family history of over-weight / Genetic Risk [GR]
     data['GR'] = data['GR'].str.lower()
@@ -184,8 +185,9 @@ def ObeseProbability(data):
             "14) TUE vs Obese",
             "15) CALC vs Obese",
             "16) Mode of Transport vs Obese",
-            "E) Exit Program"
+            "E) Return to Previous Menu"
         ]
+        print("Number of obese vs total entries:", (data['Obese'] == 1).sum() , "/", len(data.index))
         for plot in plotList:
             print(plot)
         userInput = input("Plot:").capitalize()
