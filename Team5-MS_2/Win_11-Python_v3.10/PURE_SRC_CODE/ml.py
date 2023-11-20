@@ -19,7 +19,7 @@ import pandas
 
 # Machine Learning Imports
 from sklearn.linear_model import LogisticRegression as LogisticRegressor
-from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 
 # Graphing Import
@@ -68,19 +68,23 @@ def KNearestNeigbour(predictionData, trainData, testData, config):
     K = config['K-Means']
     X = trainData[config['Parameters']['Input Parameters']].values
     y = list(trainData[config['Parameters']['Prediction Element']])
-    knn_model = KNeighborsRegressor(n_neighbors = K)
+    knn_model = KNeighborsClassifier(n_neighbors = K)
     knn_model.fit(X, y)
-    knn_model.feature_names_in_ = config['Parameters']
+
+    feature_names = config['Parameters']['Input Parameters']
+    X_test = testData[config['Parameters']['Input Parameters']].values
+
     # Prediction
-    predictions = knn_model.predict(testData[config['Parameters']['Input Parameters']].values).round(decimals=0).astype(int)
+    predictions = knn_model.predict(X_test)#.round(decimals=0).astype(int))
+    # predictionProbabilities = knn_model.predict_proba(X_test)
     predictionData = testData.copy()
     predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
     predictionData.drop('Abnormal', axis='columns', inplace=True)
     # Metrics
     # print("KNN Metrics")
-    # Metrics(testData[parameters['Prediction Element']], predictionData[parameters['Prediction Element']])
+    metrics = Metrics(predictionData, predictions, config)
 
-    return 'K-Nearest Neighbour', predictionData
+    return 'K-Nearest Neighbour', predictionData, metrics
 
 def ConfusionMatrix(predictionData, config):
     if config['Multi-Class']:

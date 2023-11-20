@@ -131,18 +131,29 @@ def VisualizeMetrics(lastAppliedModel, metrics, config):
 def LoadSave(config):
     metricsCsv = pandas.read_csv(config['Save Path'])
     metricsSet = []
-    metrics = {
-        'Model' : metricsCsv['Model'],
-        'AUC'   : list(metricsCsv['AUC'].astype(float)),
-        'CA'    : list(metricsCsv['CA'].astype(float)),
-        'MCC'   : metricsCsv['MCC'].astype(float),
-        'MAE'   : metricsCsv['MAE'].astype(float),
-        'MSE'   : metricsCsv['MSE'].astype(float),
-        'RMSE'  : metricsCsv['RMSE'].astype(float),
-        'F1'    : [],
-        'Precision' : [],
-        'Recall'    : []
-    }
+    i = 0
+    while i < len(metricsCsv):
+        metrics = {
+            'Model' : metricsCsv.loc[i,'Model'],
+            'AUC'   : metricsCsv.loc[i, 'AUC'].astype(float),
+            'CA'    : metricsCsv.loc[i, 'CA'].astype(float),
+            'MCC'   : metricsCsv.loc[i, 'MCC'].astype(float),
+            'MAE'   : metricsCsv.loc[i, 'MAE'].astype(float),
+            'MSE'   : metricsCsv.loc[i, 'MSE'].astype(float),
+            'RMSE'  : metricsCsv.loc[i, 'RMSE'].astype(float),
+            'F1'    : [],
+            'Precision' : [],
+            'Recall'    : []
+        }
+        j = 0
+        while j < len(config['Classifications']):
+            metrics['F1'].append(metricsCsv.loc[i, list(config['Classifications'].keys())[j] + '_F1'].astype(float))
+            metrics['Precision'].append(metricsCsv.loc[i, list(config['Classifications'].keys())[j] + '_Precision'].astype(float))
+            metrics['Recall'].append(metricsCsv.loc[i, list(config['Classifications'].keys())[j] + '_Recall'].astype(float))
+            j += 1
+        metricsSet.append(metrics)
+        i += 1
+
     return metricsSet
 
 def SaveSetup(config):
