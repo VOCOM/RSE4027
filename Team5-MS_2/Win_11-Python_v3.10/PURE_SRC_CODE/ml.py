@@ -87,7 +87,7 @@ def KNearestNeigbour(predictionData, trainData, testData, config):
 
     return 'K-Nearest Neighbour', predictionData, metrics
 
-def ConfusionMatrix(predictionData, config):
+def ConfusionMatrix(lastAppliedModel, predictionData, config):
     if config['Multi-Class']:
         label =  config['Classifications']
     else:

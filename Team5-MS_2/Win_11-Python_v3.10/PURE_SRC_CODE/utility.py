@@ -112,7 +112,7 @@ def VisualizeMetrics(lastAppliedModel, metrics, config):
     scoreFig.suptitle(lastAppliedModel)
 
     params = {
-    'fontsize': 5
+    'fontsize': 12
     }
 
     if config['Multi-Class']:

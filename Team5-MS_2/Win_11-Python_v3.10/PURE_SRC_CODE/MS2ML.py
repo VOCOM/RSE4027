@@ -1,7 +1,7 @@
 import os
 import pandas
 from setup import Setup, MLOperations, JOperations_s, JOperations_e
-from ml import LogisticRegression, KNearestNeigbour, PredictionResults, RandomForest
+from ml import LogisticRegression, KNearestNeigbour, ConfusionMatrix, RandomForest
 from eda import Clean
 from utility import SaveSetup, UpdateSaveData, SaveData, SaveResults
 
@@ -70,5 +70,6 @@ while userInput != "E":
         SaveResults(predictionData, config)
     if userInput == "4" or userInput == "5" or userInput == "6":
         saveData = UpdateSaveData(lastAppliedModel, saveData, metrics, config)
+        ConfusionMatrix(lastAppliedModel, predictionData, config)
     userInput = JOperations_e()
     # userInput = MLOperations()
