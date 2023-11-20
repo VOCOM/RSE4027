@@ -35,13 +35,12 @@ def LogisticRegression(predictionData, trainData, testData, config):
     regr = regr.fit(X,y)
     # Prediction
     predictions = regr.predict(testData[config['Parameters']['Input Parameters']])
-    predictionsProbabilities = regr.predict_proba(testData[config['Parameters']['Input Parameters']])
     predictionData = testData.copy()
     predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
     predictionData.drop('Abnormal', axis='columns', inplace=True)
     predictionData.sort_values('Prediction', inplace=True)
     # Metrics
-    metrics = Metrics(predictionData[config['Parameters']['Prediction Element']].values, predictions, predictionsProbabilities, config['Multi-Class'])
+    metrics = Metrics(predictionData, predictions, config)
     return 'Logistic Regression', predictionData, metrics
 
 def KNearestNeigbour(predictionData, trainData, testData, config):
@@ -106,7 +105,7 @@ def PredictionResults(lastAppliedModel, predictionData, metrics, config):
             ConfusionMatrix(predictionData, config)
         if userInput == "4":
             print(lastAppliedModel, 'Metrics')
-            VisualizeMetrics(metrics)
+            VisualizeMetrics(metrics, config)
         print("Model Used:", lastAppliedModel)
         for option in options:
             print(option)
