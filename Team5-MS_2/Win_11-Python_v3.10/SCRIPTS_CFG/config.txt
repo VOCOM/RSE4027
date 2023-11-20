@@ -7,4 +7,9 @@ Testing dataset: "..\OTH_DATA\MS_2_Scenario_data.csv"
 
 Multi-Class: "False"
 Max Iteration: "20000"
+<<<<<<< Updated upstream
 K-Means: "200
+=======
+K-Means: "90"
+Estimators: "100"
+>>>>>>> Stashed changes

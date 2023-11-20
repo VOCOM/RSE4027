@@ -18,8 +18,14 @@ import numpy
 import pandas
 
 # Machine Learning Imports
+<<<<<<< Updated upstream
 from sklearn import linear_model
 from sklearn.neighbors import KNeighborsRegressor
+=======
+from sklearn.linear_model import LogisticRegression as LogisticRegressor
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+>>>>>>> Stashed changes
 
 # Graphing Import
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
@@ -49,6 +55,7 @@ def KNearestNeigbour(predictionData, trainData, testData, parameters, config):
     predictionData.drop(predictionData.index, inplace=True)
     # K Nearest Neighbor
     K = config['K-Means']
+<<<<<<< Updated upstream
     X = trainData[parameters['Input Parameters']].values
     y = list(trainData[parameters['Prediction Element']])
     knn_model = KNeighborsRegressor(n_neighbors = K)
@@ -65,6 +72,27 @@ def KNearestNeigbour(predictionData, trainData, testData, parameters, config):
     # Metrics
     # print("KNN Metrics")
 
+=======
+    X = trainData[config['Parameters']['Input Parameters']].values
+    y = list(trainData[config['Parameters']['Prediction Element']])
+    knn_model = KNeighborsClassifier(n_neighbors = K)
+    knn_model.fit(X, y)
+
+    feature_names = config['Parameters']['Input Parameters']
+    X_test = testData[config['Parameters']['Input Parameters']].values
+
+    # Prediction
+    predictions = knn_model.predict(X_test)#.round(decimals=0).astype(int))
+    # predictionProbabilities = knn_model.predict_proba(X_test)
+    predictionData = testData.copy()
+    predictionData.insert(len(predictionData.columns), 'Prediction', predictions)
+    predictionData.drop('Abnormal', axis='columns', inplace=True)
+    # Metrics
+    # print("KNN Metrics")
+    metrics = Metrics(predictionData, predictions, config)
+
+    return 'K-Nearest Neighbour', predictionData, metrics
+>>>>>>> Stashed changes
 
     metrics = Metrics(testData[parameters['Prediction Element']].values, predictions_rounded)#predictionData[parameters['Prediction Element']])
 
