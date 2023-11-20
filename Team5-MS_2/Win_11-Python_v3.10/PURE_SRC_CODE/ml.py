@@ -56,6 +56,7 @@ def KNearestNeigbour(predictionData, trainData, testData, parameters, config):
     # K Nearest Neighbor
     K = config['K-Means']
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     X = trainData[parameters['Input Parameters']].values
     y = list(trainData[parameters['Prediction Element']])
     knn_model = KNeighborsRegressor(n_neighbors = K)
@@ -82,6 +83,17 @@ def KNearestNeigbour(predictionData, trainData, testData, parameters, config):
     X_test = testData[config['Parameters']['Input Parameters']].values
 
     # Prediction
+=======
+    X = trainData[config['Parameters']['Input Parameters']].values
+    y = list(trainData[config['Parameters']['Prediction Element']])
+    knn_model = KNeighborsClassifier(n_neighbors = K)
+    knn_model.fit(X, y)
+
+    feature_names = config['Parameters']['Input Parameters']
+    X_test = testData[config['Parameters']['Input Parameters']].values
+
+    # Prediction
+>>>>>>> Stashed changes
     predictions = knn_model.predict(X_test)#.round(decimals=0).astype(int))
     # predictionProbabilities = knn_model.predict_proba(X_test)
     predictionData = testData.copy()
@@ -92,6 +104,9 @@ def KNearestNeigbour(predictionData, trainData, testData, parameters, config):
     metrics = Metrics(predictionData, predictions, config)
 
     return 'K-Nearest Neighbour', predictionData, metrics
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
     metrics = Metrics(testData[parameters['Prediction Element']].values, predictions_rounded)#predictionData[parameters['Prediction Element']])
