@@ -11,13 +11,19 @@ pip install seaborn
 
 ```
 
-How To:
+How To (Command Prompt):
 For EDA:
 ```
-python3 MS1EDA.py
+python MS2EDA.py
+
 ```
 For ML:
 ```
-python3 MS1ML.py
+python MS2ML.py
+
+```
+For Visualisation:
+```
+python MS2VIS.py
 
 ```
