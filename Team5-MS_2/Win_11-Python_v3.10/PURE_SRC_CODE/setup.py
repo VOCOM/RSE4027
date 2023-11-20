@@ -32,6 +32,7 @@ def Setup(configOnly = False):
     mClass = False
     estimators = 0
     savePath = ''
+    resultsPath = ''
     for line in configFile.readlines():
         if "Clear Command: " in line:
             clearCMD = line.strip().split("\"")[1]
@@ -55,6 +56,8 @@ def Setup(configOnly = False):
             estimators = int(line.strip().split("\"")[1])
         if "Save Location: " in line:
             savePath = line.strip().split("\"")[1]
+        if "Results Save Location: " in line:
+            resultsPath = line.strip().split("\"")[1]
 
     if not configOnly:
         trainData = pandas.read_csv(trainingDataPath)
@@ -84,7 +87,8 @@ def Setup(configOnly = False):
         'Max Iteration' : maxIterations,
         'K-Means' : kMeans,
         'Estimators' : estimators,
-        'Save Path' : savePath
+        'Save Path' : savePath,
+        'Result Path' : resultsPath
     }
 
     if configOnly:
@@ -122,6 +126,7 @@ def MLOperations():
         "5) K-Nearest Neighbour",
         "6) Random Forest",
         "7) Save Metrics",
+        "8) Save Results",
         "E) Exit Program"
     ]
 

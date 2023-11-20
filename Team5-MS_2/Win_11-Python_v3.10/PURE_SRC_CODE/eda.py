@@ -131,7 +131,7 @@ def NaEntries(data):
 
 def CorrelationMatrix(data):
     corrList = ['G','Age','H','W','GR','FAVC','NCP','CAEC','SMOKE','CH2O','SCC','FAF','TUE','CALC','MTRANS','Obesity_Level']
-    updatedCorrList = ['Age','BMI','GR','FAVC','CAEC','CH2O','SCC','FAF','TUE','CALC','Obesity_Level'] #Only corr with > +/-0.1
+    updatedCorrList = ['G', 'Age','BMI','GR','FAVC','NCP','CAEC','SMOKE','CH2O','SCC','FAF','TUE','CALC','MTRANS','Obesity_Level']
     ## For screenshot analysis
     hwList = ['H','W','Obesity_Level']
     bmiList = ['BMI','Obesity_Level']
@@ -155,7 +155,7 @@ def CorrelationMatrix(data):
     data.loc[data['Bike'] == True, 'MTRANS'] = 3
     data.loc[data['Walking'] == True, 'MTRANS'] = 4
     ## Change between corrList,updatedCorrList,bmiList,hwList to change correlation matrix selections
-    corr_matrix = data[bmiList].corr()
+    corr_matrix = data[updatedCorrList].corr()
     plt.pyplot.figure(figsize=(9, 8))
     sns.heatmap(data = corr_matrix, cmap='BrBG', annot=True, linewidths=0.2)
     plt.pyplot.show()

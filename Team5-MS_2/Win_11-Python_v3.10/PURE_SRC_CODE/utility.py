@@ -196,3 +196,21 @@ def UpdateSaveData(lastAppliedModel, saveData, metrics, config):
         saveData.insert(len(saveData.columns), 'Recall', 0.0)
 
     return saveData
+
+def SaveResults(predictionData, config):
+    results = pandas.DataFrame(columns=['ID', 'Obesity Level', 'Prediction'])
+    isOWI = predictionData['Prediction'] == config['Classifications']['Overweight_Level_I']
+    isOWII = predictionData['Prediction'] == config['Classifications']['Overweight_Level_II']
+    results = predictionData.loc[isOWI | isOWII, ['ID', 'Obesity_Level', 'Prediction']]
+    overweightClassification = {
+        0 : 'Insufficient_Weight',
+        1 : 'Normal_Weight',
+        2 : 'Overweight_Level_I',
+        3 : 'Overweight_Level_II',
+        4 : 'Obesity_Type_I',
+        5 : 'Obesity_Type_II',
+        6 : 'Obesity_Type_III'
+    }
+    results['Obesity_Level'] = results['Obesity_Level'].replace(overweightClassification, regex=True)
+    results['Prediction'] = results['Prediction'].replace(overweightClassification, regex=True)
+    results.to_csv(config['Result Path'])

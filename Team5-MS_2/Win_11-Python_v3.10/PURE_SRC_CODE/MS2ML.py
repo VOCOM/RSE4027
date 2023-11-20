@@ -3,7 +3,7 @@ import pandas
 from setup import Setup, MLOperations
 from ml import LogisticRegression, KNearestNeigbour, RandomForest
 from eda import Clean
-from utility import SaveSetup, UpdateSaveData, SaveData
+from utility import SaveSetup, UpdateSaveData, SaveData, SaveResults
 
 lastAppliedModel = None
 metrics = None
@@ -64,6 +64,8 @@ while userInput != "E":
         lastAppliedModel, predictionData, metrics = RandomForest(predictionData, cleanTrainData, cleanTestData, config)
     if userInput == "7":
         SaveData(saveData, config['Save Path'])
+    if userInput == "8":
+        SaveResults(predictionData, config)
     if userInput == "4" or userInput == "5" or userInput == "6":
         saveData = UpdateSaveData(lastAppliedModel, saveData, metrics, config)
     userInput = MLOperations()

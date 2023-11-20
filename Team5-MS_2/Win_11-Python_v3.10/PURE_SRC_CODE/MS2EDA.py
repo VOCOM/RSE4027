@@ -32,7 +32,7 @@ config.update({'Binary' : binary})
 cleanTrainData = Clean(rawTrainData.copy(), config)
 cleanTestData = Clean(rawTestData.copy(), config)
 
-userInput = EDAOperations()
+userInput = None
 
 while userInput != "E":
     os.system(clearCMD)
