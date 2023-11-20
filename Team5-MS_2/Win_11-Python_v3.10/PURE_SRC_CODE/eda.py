@@ -51,6 +51,7 @@ def Clean(data, config):
 
     # Extra for analysis, could consider dropping H and W after [BMI] 
     data['BMI'] = data['W'] / (data['H'] * data['H'])
+    data['BMI'] = data['BMI'].round(2)
 
     # Family history of over-weight / Genetic Risk [GR]
     data['GR'] = data['GR'].str.lower()
