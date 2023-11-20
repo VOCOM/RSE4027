@@ -71,4 +71,4 @@ while userInput != "E":
     if userInput == "4" or userInput == "5" or userInput == "6":
         saveData = UpdateSaveData(lastAppliedModel, saveData, metrics, config)
     userInput = JOperations_e()
-    userInput = MLOperations()
+    # userInput = MLOperations()

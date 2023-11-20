@@ -56,7 +56,7 @@ def Setup(configOnly = False):
             estimators = int(line.strip().split("\"")[1])
         if "Save Location: " in line:
             savePath = line.strip().split("\"")[1]
-        if "Results Save Location: " in line:
+        if "Results: " in line:
             resultsPath = line.strip().split("\"")[1]
 
     if not configOnly:
@@ -126,7 +126,8 @@ def JOperations_s():
         "4) Logistic Regression",
         "5) K-Nearest Neighbour",
         "6) Random Forest",
-        "7) Prediction Results",
+        "7) Save Metrics",
+        "8) Save Results",
         "E) Exit Program"
     ]
 

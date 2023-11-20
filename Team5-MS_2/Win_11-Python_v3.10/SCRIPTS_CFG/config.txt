@@ -11,4 +11,4 @@ K-Means: "200"
 Estimators: "100"
 
 Save Location: "../ML_DATA/Metrics.csv"
-Results Save Location: "../OTH_DATA/Results.csv"
+Results: "../OTH_DATA/Results.csv"
