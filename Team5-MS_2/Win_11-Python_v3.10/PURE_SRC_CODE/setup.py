@@ -88,8 +88,9 @@ def EDAOperations():
         "3) Print cleaned data table",
         "4) Print original test table",
         "5) Print cleaned test table",
-        "6) Data Distributions",
-        "7) EDA Visualization",
+        "6) Print information about missing entries",
+        "7) Correlation Matrix",
+        "8) Specific data column vs obese probability",
         "E) Exit Program"
     ]
 
