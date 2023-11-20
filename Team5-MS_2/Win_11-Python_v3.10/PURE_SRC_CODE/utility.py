@@ -127,4 +127,62 @@ def VisualizeMetrics(lastAppliedModel, metrics, config):
         metricAx.bar_label(metricBar, fmt='{:.2f}')
     metricFig.suptitle(lastAppliedModel)
     plt.show()
-    
+
+def LoadSave(config):
+    metricsCsv = pandas.read_csv(config['Save Path'])
+    metricsSet = []
+    metrics = {
+        'Model' : metricsCsv['Model'],
+        'AUC'   : list(metricsCsv['AUC'].astype(float)),
+        'CA'    : list(metricsCsv['CA'].astype(float)),
+        'MCC'   : metricsCsv['MCC'].astype(float),
+        'MAE'   : metricsCsv['MAE'].astype(float),
+        'MSE'   : metricsCsv['MSE'].astype(float),
+        'RMSE'  : metricsCsv['RMSE'].astype(float),
+        'F1'    : [],
+        'Precision' : [],
+        'Recall'    : []
+    }
+    return metricsSet
+
+def SaveSetup(config):
+    saveData = pandas.DataFrame(columns=['Model', 'AUC', 'CA', 'MCC', 'MAE', 'MSE', 'RMSE'])
+    if config['Multi-Class']:
+        for classification in list(config['Classifications'].keys()):
+            saveData.insert(len(saveData.columns), classification + '_F1', 0.0)
+            saveData.insert(len(saveData.columns), classification + '_Precision', 0.0)
+            saveData.insert(len(saveData.columns), classification + '_Recall', 0.0)
+    else:
+        saveData.insert(len(saveData.columns), 'F1', 0.0)
+        saveData.insert(len(saveData.columns), 'Precision', 0.0)
+        saveData.insert(len(saveData.columns), 'Recall', 0.0)
+    return saveData
+
+def SaveData(saveData, filepath):
+    saveData.to_csv(filepath)
+
+def UpdateSaveData(lastAppliedModel, saveData, metrics, config):
+    if lastAppliedModel == None:
+        return
+    saveData.loc[lastAppliedModel, 'Model']  = lastAppliedModel
+    saveData.loc[lastAppliedModel, 'AUC']  = metrics['AUC']
+    saveData.loc[lastAppliedModel, 'CA']   = metrics['CA']
+    saveData.loc[lastAppliedModel, 'MCC']  = metrics['MCC']
+    saveData.loc[lastAppliedModel, 'MAE']  = metrics['MAE']
+    saveData.loc[lastAppliedModel, 'MSE']  = metrics['MSE']
+    saveData.loc[lastAppliedModel, 'RMSE'] = metrics['RMSE']
+
+    if config['Multi-Class']:
+        i = 0
+        for classification in list(config['Classifications'].keys()):
+            saveData.loc[lastAppliedModel,classification + '_F1'] = metrics['F1'][i]
+            saveData.loc[lastAppliedModel,classification + '_Precision'] = metrics['Precision'][i]
+            saveData.loc[lastAppliedModel,classification + '_Recall'] = metrics['Recall'][i]
+            i += 1
+    else:
+        saveData.insert(len(saveData.columns), 'F1', 0.0)
+        saveData.insert(len(saveData.columns), 'Precision', 0.0)
+        saveData.insert(len(saveData.columns), 'Recall', 0.0)
+
+    print(saveData.to_string(), '\n')
+    return saveData

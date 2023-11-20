@@ -4,7 +4,7 @@
 ##
 
 import os
-from setup import Setup, EDAOperations, Plots
+from setup import Setup, EDAOperations
 from eda import Clean, DropAbnormalities, NaEntries, CorrelationMatrix, ObeseProbability
 
 clearCMD = 'cls'
