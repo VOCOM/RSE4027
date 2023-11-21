@@ -9,6 +9,8 @@ from eda import Clean, DropAbnormalities, NaEntries, CorrelationMatrix, ObesePro
 
 clearCMD = 'cls'
 rawTrainData, rawTestData, config = Setup()
+print(len(rawTrainData), len(rawTestData))
+input()
 # Classifications
 classification = {
     'Insufficient_Weight' : 0,

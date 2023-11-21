@@ -2,7 +2,7 @@ Clear Command: "cls"
 Unified dataset: "True"
 SplitRatio (Train/Test): "60/40"
 
-Training dataset: "..\OTH_DATA\MS_2_Scenario_data.csv"
+Training dataset: "..\OTH_DATA\MS_2_TestCase_Data.csv"
 Testing dataset: "..\OTH_DATA\MS_2_Scenario_data.csv"
 
 Multi-Class: "True"

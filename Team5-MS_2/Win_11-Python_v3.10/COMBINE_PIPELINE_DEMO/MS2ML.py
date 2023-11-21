@@ -48,7 +48,7 @@ cleanTestData = Clean(rawTestData.copy(), config)
 
 predictionData = pandas.DataFrame(columns=cleanTestData.columns)
 
-JOperations_s()
+# JOperations_s()
 
 while userInput != "E":
     os.system(clearCMD)
@@ -71,5 +71,5 @@ while userInput != "E":
     if userInput == "4" or userInput == "5" or userInput == "6":
         saveData = UpdateSaveData(lastAppliedModel, saveData, metrics, config)
         ConfusionMatrix(lastAppliedModel, predictionData, config)
-    userInput = JOperations_e()
-    # userInput = MLOperations()
+    # userInput = JOperations_e()
+    userInput = MLOperations()

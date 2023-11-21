@@ -61,6 +61,7 @@ def Setup(configOnly = False):
 
     if not configOnly:
         trainData = pandas.read_csv(trainingDataPath)
+        trainData.dropna(axis='index', inplace=True, how='all')
         if isUnified:
             testData = trainData.copy()
             maxIndex = len(trainData)
